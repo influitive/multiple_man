@@ -23,14 +23,37 @@ describe MultipleMan::ModelPublisher do
     end
   end
 
+  subject { described_class.new(:create) }
+
   describe "after_commit" do
     it "should queue the update in the correct topic" do
       channel_stub.should_receive(:topic).with("app")
-      described_class.new.after_commit(MockObject.new)
+      described_class.new(:create).after_commit(MockObject.new)
     end
     it "should send the jsonified version of the model to the correct routing key" do
       topic_stub.should_receive(:publish).with('{"foo": "bar"}', routing_key: "mock_object.create")
-      described_class.new.after_commit(MockObject.new)
+      described_class.new(:create).after_commit(MockObject.new)
+    end
+  end
+
+  its(:topic_name) { should == MultipleMan.configuration.topic_name }
+
+  describe "routing_key" do
+    subject { described_class.new(operation).routing_key(MockObject.new) }
+
+    context "creating" do
+      let(:operation) { :create }
+      it { should == "mock_object.create" }
+    end
+
+    context "updating" do
+      let(:operation) { :update }
+      it { should == "mock_object.update" }
+    end
+
+    context "destroying" do
+      let(:operation) { :destroy }
+      it { should == "mock_object.destroy" }
     end
   end
 end
