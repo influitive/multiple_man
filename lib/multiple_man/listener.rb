@@ -4,12 +4,10 @@ module MultipleMan
   class Listener
 
     class << self
-      def start
-        Connection.connect do |connection|
-          self.connection = connection
-          ModelSubscriber.subscriptions.each do |subscription|
-            new(subscription).listen
-          end
+      def start(connection)
+        self.connection = connection
+        ModelSubscriber.subscriptions.each do |subscription|
+          new(subscription).listen
         end
       end
 
@@ -22,7 +20,7 @@ module MultipleMan
 
     attr_accessor :subscription
 
-    def listen(subscription)
+    def listen
       queue.bind(connection.topic, routing_key: subscription.routing_key) do |delivery_info, meta_data, payload|
         process_message(delivery_info, payload)
       end
@@ -30,7 +28,7 @@ module MultipleMan
 
     def process_message(delivery_info, payload)
       operation = delivery_info.routing_key.split(".").last
-      subscription.send(operation, JSON.decode(payload))
+      subscription.send(operation, JSON.parse(payload))
     end
 
     def queue

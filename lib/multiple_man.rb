@@ -1,5 +1,7 @@
 require "multiple_man/version"
 
+Dir["tasks/**/*.rake"].each { |ext| load ext } if defined?(Rake)
+
 module MultipleMan
   require 'multiple_man/mixins/publisher'
   require 'multiple_man/mixins/subscriber'

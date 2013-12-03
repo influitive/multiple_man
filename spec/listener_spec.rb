@@ -5,10 +5,6 @@ describe MultipleMan::Listener do
   class MockClass2; end
 
   describe "start" do
-    it "should connect to the queue" do
-      MultipleMan::Connection.should_receive(:connect)
-      MultipleMan::Listener.start
-    end
     it "should listen to each subscription" do
       MultipleMan::ModelSubscriber.stub(:subscriptions).and_return([
         mock1 = double(MultipleMan::ModelSubscriber, klass: MockClass1),
@@ -22,16 +18,28 @@ describe MultipleMan::Listener do
       # ease of stubbing.
       mock_listener.should_receive(:listen).twice
 
-      MultipleMan::Listener.start
+      MultipleMan::Listener.start(double(Bunny))
     end
   end
 
   describe "listen" do
-    it "should listen to the right topic" do
+    let(:connection_stub) { double(Bunny, channel: channel_stub, topic: 'app') }
+    let(:channel_stub) { double(Bunny::Channel, queue: queue_stub) }
+    let(:queue_stub) { double(Bunny::Queue, bind: nil) }
 
-    end
-    it "should listen for all updates to a model" do
+    before { MultipleMan::Listener.stub(:connection).and_return(connection_stub) }
 
+    it "should listen to the right topic, and for all updates to a model" do
+      listener = MultipleMan::Listener.new(double(MultipleMan::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#"))
+      queue_stub.should_receive(:bind).with('app', routing_key: "MockClass1.#")
+      listener.listen
     end
+  end
+
+  specify "process_message should send the correct data" do
+    subscriber = double(MultipleMan::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#")
+    listener = MultipleMan::Listener.new(subscriber)
+    subscriber.should_receive(:create).with({"a" => 1, "b" => 2})
+    listener.process_message(OpenStruct.new(routing_key: "MockClass1.create"), '{"a":1,"b":2}')
   end
 end
