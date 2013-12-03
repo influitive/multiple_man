@@ -41,4 +41,8 @@ describe MultipleMan::ModelSubscriber do
       MultipleMan::ModelSubscriber.new(MockClass).destroy({id: 1})
     end
   end
+
+  specify "routing_key should be the model name and a wildcard" do
+    MultipleMan::ModelSubscriber.new(MockClass).routing_key.should == "MockClass.#"
+  end
 end

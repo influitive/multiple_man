@@ -7,22 +7,18 @@ module MultipleMan
     end
 
     def after_commit(record)
-      with_open_channel do |channel|
-        channel.topic(topic_name).publish(record_data(record), routing_key: routing_key(record))
+      Connection.connect do |connection|
+        connection.topic.publish(record_data(record), routing_key: RoutingKey.new(record, operation).to_s)
       end
-    end
-
-    def topic_name
-      MultipleMan.configuration.topic_name
-    end
-
-    def routing_key(record)
-      "#{record.model_name.singular}.#{operation}"
     end
 
   private
 
     attr_accessor :operation, :options
+
+    def connection
+      @connection ||= Connection.new
+    end
 
     def record_data(record)
       AttributeExtractor.new(record, fields).to_json
@@ -32,11 +28,6 @@ module MultipleMan
       options[:fields]
     end
 
-    def with_open_channel
-      connection = Bunny.new
-      connection.start
-      yield connection.create_channel
-      connection.close
-    end 
+    
   end
 end

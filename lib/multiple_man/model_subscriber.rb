@@ -31,6 +31,10 @@ module MultipleMan
       model.destroy
     end
 
+    def routing_key
+      RoutingKey.new(klass).to_s
+    end
+
   private
 
     def find_model(data)

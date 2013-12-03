@@ -1,6 +1,6 @@
 module MultipleMan
   class Configuration
-    attr_accessor :topic_name
+    attr_accessor :app_name
   end
 
   def self.configuration
