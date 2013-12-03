@@ -23,7 +23,7 @@ module MultipleMan
 
     def listen
       puts "Listening for #{subscription.klass} with routing key #{subscription.routing_key}."
-      queue.bind(connection.topic, routing_key: subscription.routing_key) do |delivery_info, meta_data, payload|
+      queue.bind(connection.topic, routing_key: subscription.routing_key).subscribe do |delivery_info, meta_data, payload|
         process_message(delivery_info, payload)
       end
     end

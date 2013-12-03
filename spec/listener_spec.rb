@@ -25,7 +25,8 @@ describe MultipleMan::Listener do
   describe "listen" do
     let(:connection_stub) { double(Bunny, channel: channel_stub, topic: 'app') }
     let(:channel_stub) { double(Bunny::Channel, queue: queue_stub) }
-    let(:queue_stub) { double(Bunny::Queue, bind: nil) }
+    let(:queue_stub) { double(Bunny::Queue, bind: bind_stub) }
+    let(:bind_stub) { double(:bind, subscribe: nil)}
 
     before { MultipleMan::Listener.stub(:connection).and_return(connection_stub) }
 
