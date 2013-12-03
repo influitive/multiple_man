@@ -14,8 +14,8 @@ describe MultipleMan::ModelPublisher do
   }
 
   class MockObject
-    def to_json
-      '{"foo": "bar"}'
+    def foo
+      "bar"
     end
 
     def model_name
@@ -23,23 +23,24 @@ describe MultipleMan::ModelPublisher do
     end
   end
 
-  subject { described_class.new(:create) }
+  subject { described_class.new(:create, fields: [:foo]) }
 
   describe "after_commit" do
     it "should queue the update in the correct topic" do
       channel_stub.should_receive(:topic).with("app")
-      described_class.new(:create).after_commit(MockObject.new)
+      described_class.new(:create, fields: [:foo]).after_commit(MockObject.new)
     end
     it "should send the jsonified version of the model to the correct routing key" do
+      MultipleMan::AttributeExtractor.any_instance.should_receive(:to_json).and_return('{"foo": "bar"}')
       topic_stub.should_receive(:publish).with('{"foo": "bar"}', routing_key: "mock_object.create")
-      described_class.new(:create).after_commit(MockObject.new)
+      described_class.new(:create, fields: [:foo]).after_commit(MockObject.new)
     end
   end
 
   its(:topic_name) { should == MultipleMan.configuration.topic_name }
 
   describe "routing_key" do
-    subject { described_class.new(operation).routing_key(MockObject.new) }
+    subject { described_class.new(operation, fields: [:foo]).routing_key(MockObject.new) }
 
     context "creating" do
       let(:operation) { :create }

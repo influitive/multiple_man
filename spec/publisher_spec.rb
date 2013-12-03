@@ -4,6 +4,8 @@ describe MultipleMan::Publisher do
   class MockClass
     class << self
       attr_accessor :subscriber
+
+      include MultipleMan::Publisher
       
       def after_commit(subscriber, operation)
         self.subscriber = subscriber
@@ -19,12 +21,12 @@ describe MultipleMan::Publisher do
     it "should add an after commit hook" do
       # once for each operation
       MockClass.should_receive(:after_commit).exactly(3).times
-      MockClass.send(:include, MultipleMan::Publisher)
+      MockClass.publish
     end
   end
 
   describe "publish" do
-    before { MockClass.send(:include, MultipleMan::Publisher) }
+    before { MockClass.publish }
     it "should tell ModelPublisher to publish" do
       my_mock = MockClass.new
       mock_publisher = double(MultipleMan::ModelPublisher)

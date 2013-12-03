@@ -1,11 +1,9 @@
 module MultipleMan
   module Publisher
-    def Publisher.included(base)
-      base.class_eval do
-        after_commit ModelPublisher.new(:create), on: :create
-        after_commit ModelPublisher.new(:update), on: :update
-        after_commit ModelPublisher.new(:destroy), on: :destroy
-      end
+    def publish(options = {})
+      after_commit ModelPublisher.new(:create, options), on: :create
+      after_commit ModelPublisher.new(:update, options), on: :update
+      after_commit ModelPublisher.new(:destroy, options), on: :destroy
     end
   end
 end
