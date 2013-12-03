@@ -5,12 +5,12 @@ describe MultipleMan::Publisher do
     class << self
       attr_accessor :subscriber
 
-      include MultipleMan::Publisher
-      
       def after_commit(subscriber, operation)
         self.subscriber = subscriber
       end
     end
+
+    include MultipleMan::Publisher
 
     def save
       self.class.subscriber.after_commit(self)

@@ -16,6 +16,6 @@ describe MultipleMan::Connection do
 
   subject { described_class.new(mock_bunny) }
 
-  its(:topic_name) { should == MultipleMan.configuration.app_name }
+  its(:topic_name) { should == MultipleMan.configuration.topic_name }
 
 end

@@ -21,7 +21,7 @@ module MultipleMan
     end
 
     def topic_name
-      MultipleMan.configuration.app_name
+      MultipleMan.configuration.topic_name
     end
 
   private

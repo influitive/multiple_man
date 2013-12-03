@@ -35,6 +35,10 @@ module MultipleMan
       RoutingKey.new(klass).to_s
     end
 
+    def queue_name
+      "#{MultipleMan.configuration.app_name}.#{klass.name}"
+    end
+
   private
 
     def find_model(data)

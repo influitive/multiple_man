@@ -6,7 +6,7 @@ describe MultipleMan::ModelPublisher do
 
   before {
     MultipleMan.configure do |config|
-      config.app_name = "app"
+      config.topic_name = "app"
     end
 
     MultipleMan::Connection.any_instance.stub(:channel).and_return(channel_stub)

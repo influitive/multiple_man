@@ -30,7 +30,7 @@ describe MultipleMan::Listener do
     before { MultipleMan::Listener.stub(:connection).and_return(connection_stub) }
 
     it "should listen to the right topic, and for all updates to a model" do
-      listener = MultipleMan::Listener.new(double(MultipleMan::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#"))
+      listener = MultipleMan::Listener.new(double(MultipleMan::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#", queue_name: "MockClass1"))
       queue_stub.should_receive(:bind).with('app', routing_key: "MockClass1.#")
       listener.listen
     end
