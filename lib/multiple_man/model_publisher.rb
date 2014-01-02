@@ -27,13 +27,16 @@ module MultipleMan
     end
 
     def record_data(record)
-      AttributeExtractor.new(record, fields).to_json
+      AttributeExtractor.new(record, fields, identifier).to_json
     end
 
     def fields
       options[:fields]
     end
 
+    def identifier
+      options[:identifier]
+    end
     
   end
 end

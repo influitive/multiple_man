@@ -11,7 +11,8 @@ module MultipleMan
       @logger ||= defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
     end
 
-    attr_accessor :topic_name, :app_name, :connection, :logger, :enabled
+    attr_accessor :topic_name, :app_name, :connection, :enabled
+    attr_writer :logger
   end
 
   def self.configuration

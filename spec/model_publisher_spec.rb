@@ -17,6 +17,10 @@ describe MultipleMan::ModelPublisher do
       "bar"
     end
 
+    def id
+      10
+    end
+
     def model_name
       OpenStruct.new(singular: "mock_object")
     end
@@ -30,8 +34,8 @@ describe MultipleMan::ModelPublisher do
       described_class.new(:create, fields: [:foo]).after_commit(MockObject.new)
     end
     it "should send the jsonified version of the model to the correct routing key" do
-      MultipleMan::AttributeExtractor.any_instance.should_receive(:to_json).and_return('{"foo": "bar"}')
-      topic_stub.should_receive(:publish).with('{"foo": "bar"}', routing_key: "MockObject.create")
+      MultipleMan::AttributeExtractor.any_instance.should_receive(:to_json).and_return('{"id":10,"data":{"foo": "bar"}}')
+      topic_stub.should_receive(:publish).with('{"id":10,"data":{"foo": "bar"}}', routing_key: "MockObject.create")
       described_class.new(:create, fields: [:foo]).after_commit(MockObject.new)
     end
   end

@@ -16,17 +16,16 @@ module MultipleMan
 
     attr_reader :klass    
 
-    def create(data)
-      model = find_model(data)
-      model.remote_id = data.delete(:id)
-      model.attributes = data
+    def create(payload)
+      model = find_model(payload[:id])
+      model.attributes = payload[:data]
       model.save!
     end
 
     alias_method :update, :create
 
-    def destroy(data)
-      model = find_model(data)
+    def destroy(payload)
+      model = find_model(payload[:id])
       model.destroy!
     end
 
@@ -40,8 +39,8 @@ module MultipleMan
 
   private
 
-    def find_model(data)
-      klass.find_by_remote_id(data[:id]) || klass.new
+    def find_model(id)
+      klass.find_or_initialize_by(multiple_man_identifier: id)
     end
 
     attr_writer :klass
