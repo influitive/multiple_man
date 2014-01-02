@@ -41,6 +41,6 @@ describe MultipleMan::Listener do
     subscriber = double(MultipleMan::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#")
     listener = MultipleMan::Listener.new(subscriber)
     subscriber.should_receive(:create).with({"a" => 1, "b" => 2})
-    listener.process_message(OpenStruct.new(routing_key: "MockClass1.create"), '{"a":1,"b":2}')
+    listener.process_message(OpenStruct.new(routing_key: "app.MockClass1.create"), '{"a":1,"b":2}')
   end
 end

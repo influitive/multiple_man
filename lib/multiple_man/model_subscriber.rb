@@ -34,7 +34,7 @@ module MultipleMan
     end
 
     def queue_name
-      "#{MultipleMan.configuration.app_name}.#{klass.name}"
+      "#{MultipleMan.configuration.topic_name}.#{MultipleMan.configuration.app_name}.#{klass.name}"
     end
 
   private

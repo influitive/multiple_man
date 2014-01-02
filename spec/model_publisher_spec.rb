@@ -35,7 +35,7 @@ describe MultipleMan::ModelPublisher do
     end
     it "should send the jsonified version of the model to the correct routing key" do
       MultipleMan::AttributeExtractor.any_instance.should_receive(:to_json).and_return('{"id":10,"data":{"foo": "bar"}}')
-      topic_stub.should_receive(:publish).with('{"id":10,"data":{"foo": "bar"}}', routing_key: "MockObject.create")
+      topic_stub.should_receive(:publish).with('{"id":10,"data":{"foo": "bar"}}', routing_key: "app.MockObject.create")
       described_class.new(:create, fields: [:foo]).after_commit(MockObject.new)
     end
   end

@@ -34,13 +34,13 @@ describe MultipleMan::ModelSubscriber do
   end
 
   specify "routing_key should be the model name and a wildcard" do
-    MultipleMan::ModelSubscriber.new(MockClass).routing_key.should == "MockClass.#"
+    MultipleMan::ModelSubscriber.new(MockClass).routing_key.should == "app.MockClass.#"
   end
 
   specify "queue name should be the app name + class" do
     MultipleMan.configure do |config|
       config.app_name = "test"
     end
-    MultipleMan::ModelSubscriber.new(MockClass).queue_name.should == "test.MockClass"
+    MultipleMan::ModelSubscriber.new(MockClass).queue_name.should == "app.test.MockClass"
   end
 end

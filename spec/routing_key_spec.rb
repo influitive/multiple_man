@@ -4,27 +4,33 @@ describe MultipleMan::RoutingKey do
   class MockObject
   end
 
+  before do
+    MultipleMan.configure do |config|
+      config.topic_name = "app"
+    end
+  end
+
   describe "to_s" do
     subject { described_class.new(MockObject.new, operation).to_s }
 
     context "creating" do
       let(:operation) { :create }
-      it { should == "MockObject.create" }
+      it { should == "app.MockObject.create" }
     end
 
     context "updating" do
       let(:operation) { :update }
-      it { should == "MockObject.update" }
+      it { should == "app.MockObject.update" }
     end
 
     context "destroying" do
       let(:operation) { :destroy }
-      it { should == "MockObject.destroy" }
+      it { should == "app.MockObject.destroy" }
     end
 
     context "not specified" do
       subject { described_class.new(MockObject.new).to_s }
-      it { should == "MockObject.#" }
+      it { should == "app.MockObject.#" }
     end
   end
 

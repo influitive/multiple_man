@@ -32,11 +32,12 @@ module MultipleMan
       MultipleMan.logger.info "Processing message for #{delivery_info.routing_key}."
       begin
         operation = delivery_info.routing_key.split(".").last
-        subscription.send(operation, JSON.parse(payload).with_indifferent_access)
+        subscription.send(operation, JSON.parse(payload))
       rescue Exception => ex
         MultipleMan.logger.error "   Error - #{ex.message}"
+      else
+        MultipleMan.logger.info "   Successfully processed!"
       end
-      MultipleMan.logger.info "   Successfully processed!"
     end
 
     def queue

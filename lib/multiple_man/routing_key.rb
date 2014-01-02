@@ -8,7 +8,7 @@ module MultipleMan
     end
 
     def to_s
-      "#{klass.name}.#{operation}"
+      "#{topic_name}.#{klass.name}.#{operation}"
     end
 
     attr_reader :operation
@@ -21,6 +21,11 @@ module MultipleMan
 
     def klass=(value)
       @klass = (value.is_a?(Class) ? value : value.class)
+    end
+
+  private
+    def topic_name
+      MultipleMan.configuration.topic_name
     end
 
   end
