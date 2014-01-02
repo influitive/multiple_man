@@ -1,7 +1,7 @@
 module MultipleMan
   class Connection
     def self.connect
-      connection = Bunny.new
+      connection = Bunny.new(MultipleMan.configuration.connection)
       connection.start
       yield new(connection) if block_given?
     ensure

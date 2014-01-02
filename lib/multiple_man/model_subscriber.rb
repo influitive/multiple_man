@@ -17,18 +17,17 @@ module MultipleMan
     attr_reader :klass    
 
     def create(data)
-      klass.new(data).save
+      model = find_model(data)
+      model.remote_id = data.delete(:id)
+      model.attributes = data
+      model.save!
     end
 
-    def update(data)
-      model = find_model(data)
-      model.attributes = data
-      model.save
-    end
+    alias_method :update, :create
 
     def destroy(data)
       model = find_model(data)
-      model.destroy
+      model.destroy!
     end
 
     def routing_key
@@ -42,7 +41,7 @@ module MultipleMan
   private
 
     def find_model(data)
-      klass.find_by_remote_id(data[:id])
+      klass.find_by_remote_id(data[:id]) || klass.new
     end
 
     attr_writer :klass

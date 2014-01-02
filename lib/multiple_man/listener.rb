@@ -30,8 +30,13 @@ module MultipleMan
 
     def process_message(delivery_info, payload)
       puts "Processing message for #{delivery_info.routing_key}."
-      operation = delivery_info.routing_key.split(".").last
-      subscription.send(operation, JSON.parse(payload))
+      begin
+        operation = delivery_info.routing_key.split(".").last
+        subscription.send(operation, JSON.parse(payload))
+      rescue Exception => ex
+        puts "   Error - #{ex.message}"
+      end
+      puts "   Successfully processed!"
     end
 
     def queue

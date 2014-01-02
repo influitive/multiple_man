@@ -6,7 +6,7 @@ module MultipleMan
       self.app_name = Rails.application.class.parent.to_s if defined?(Rails)
     end
 
-    attr_accessor :topic_name, :app_name
+    attr_accessor :topic_name, :app_name, :connection
   end
 
   def self.configuration

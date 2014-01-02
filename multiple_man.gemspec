@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = MultipleMan::VERSION
   spec.authors       = ["Ryan Brunner"]
   spec.email         = ["ryan@influitive.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{MultipleMan syncs changes to ActiveRecord models via AMQP}
+  spec.summary       = %q{MultipleMan syncs changes to ActiveRecord models via AMQP}
   spec.homepage      = ""
   spec.license       = "MIT"
 
