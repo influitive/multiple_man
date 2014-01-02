@@ -7,6 +7,8 @@ module MultipleMan
     end
 
     def after_commit(record)
+      return unless MultipleMan.configuration.enabled
+
       MultipleMan.logger.info("Publishing #{record}")
       Connection.connect do |connection|
         push_record(connection, record)

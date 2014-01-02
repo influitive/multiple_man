@@ -16,4 +16,12 @@ module MultipleMan
   def self.logger
     MultipleMan.configuration.logger
   end
+
+  def self.disable!
+    MultipleMan.configuration.enabled = false
+  end
+
+  def self.enable!
+    MultipleMan.configuration.enabled = true
+  end
 end

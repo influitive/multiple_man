@@ -4,9 +4,7 @@ describe MultipleMan do
   let(:mock_logger) { double(Logger) }
 
   before do
-    MultipleMan.configure do |config|
-      config.logger = mock_logger
-    end
+    MultipleMan.configuration.stub(:logger).and_return(mock_logger)
   end
 
   it "should use the logger from configuration" do
