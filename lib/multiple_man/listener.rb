@@ -5,7 +5,7 @@ module MultipleMan
 
     class << self
       def start(connection)
-        puts "Starting listeners."
+        MultipleMan.logger.info "Starting listeners."
         self.connection = connection
         ModelSubscriber.subscriptions.each do |subscription|
           new(subscription).listen
@@ -22,21 +22,21 @@ module MultipleMan
     attr_accessor :subscription
 
     def listen
-      puts "Listening for #{subscription.klass} with routing key #{subscription.routing_key}."
+      MultipleMan.logger.info "Listening for #{subscription.klass} with routing key #{subscription.routing_key}."
       queue.bind(connection.topic, routing_key: subscription.routing_key).subscribe do |delivery_info, meta_data, payload|
         process_message(delivery_info, payload)
       end
     end
 
     def process_message(delivery_info, payload)
-      puts "Processing message for #{delivery_info.routing_key}."
+      MultipleMan.logger.info "Processing message for #{delivery_info.routing_key}."
       begin
         operation = delivery_info.routing_key.split(".").last
-        subscription.send(operation, JSON.parse(payload))
+        subscription.send(operation, JSON.parse(payload).with_indifferent_access)
       rescue Exception => ex
-        puts "   Error - #{ex.message}"
+        MultipleMan.logger.error "   Error - #{ex.message}"
       end
-      puts "   Successfully processed!"
+      MultipleMan.logger.info "   Successfully processed!"
     end
 
     def queue

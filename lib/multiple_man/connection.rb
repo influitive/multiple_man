@@ -1,14 +1,18 @@
+require 'bunny'
+
 module MultipleMan
   class Connection
     def self.connect
       MultipleMan.logger.info "Connecting to #{MultipleMan.configuration.connection}"
       connection = Bunny.new(MultipleMan.configuration.connection)
-      MultipleMan.logger.info "Starting connection - block #{block_given?}"
-      connection.start
-      yield new(connection) if block_given?
-    ensure
-      MultipleMan.logger.info "Closing connection"
-      connection.close
+      begin
+        MultipleMan.logger.info "Starting connection"
+        connection.start
+        yield new(connection) if block_given?
+      ensure
+        MultipleMan.logger.info "Closing connection"
+        connection.close
+      end
     end
 
     def initialize(connection)
