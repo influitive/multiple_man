@@ -1,4 +1,5 @@
 require 'json'
+require 'active_support/core_ext/hash'
 
 module MultipleMan
   class Listener
@@ -32,7 +33,7 @@ module MultipleMan
       MultipleMan.logger.info "Processing message for #{delivery_info.routing_key}."
       begin
         operation = delivery_info.routing_key.split(".").last
-        subscription.send(operation, JSON.parse(payload))
+        subscription.send(operation, JSON.parse(payload).with_indifferent_access)
       rescue Exception => ex
         MultipleMan.logger.error "   Error - #{ex.message}"
       else
