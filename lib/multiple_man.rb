@@ -12,4 +12,8 @@ module MultipleMan
   require 'multiple_man/connection'
   require 'multiple_man/routing_key'
   require 'multiple_man/listener'
+
+  def self.logger
+    MultipleMan.configuration.logger
+  end
 end
