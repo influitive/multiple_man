@@ -11,13 +11,13 @@ module MultipleMan
       end
     end
 
+    def self.open_channel
+      Thread.current[:multiple_man_channel] ||= connection.create_channel
+    end
+
     def self.connect
-      channel = connection.create_channel
-      begin
-        yield new(channel) if block_given?
-      ensure
-        channel.close
-      end
+      channel = open_channel
+      yield new(channel) if block_given?
     end
 
     def initialize(channel)

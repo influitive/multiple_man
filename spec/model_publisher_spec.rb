@@ -9,7 +9,7 @@ describe MultipleMan::ModelPublisher do
       config.topic_name = "app"
     end
 
-    MultipleMan::Connection.stub(:connection).and_return(double(Bunny, create_channel: channel_stub))
+    MultipleMan::Connection.stub(:open_channel).and_return(channel_stub)
   }
 
   class MockObject

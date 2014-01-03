@@ -6,11 +6,10 @@ describe MultipleMan::Connection do
   let(:mock_channel) { double(Bunny::Channel) }
 
   describe "connect" do
-    it "should open and close the connection" do
+    it "should open a connection and a channel" do
       mock_bunny.should_receive(:start)
       Bunny.should_receive(:new).and_return(mock_bunny)
       mock_bunny.should_receive(:create_channel).and_return(mock_channel)
-      mock_channel.should_receive(:close)
 
       described_class.connect
     end
