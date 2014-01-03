@@ -8,7 +8,7 @@ module MultipleMan
       
       self.record = record
       self.fields = fields 
-      self.identifier = identifier
+      self.identifier = identifier || :id
     end
 
     def data
@@ -21,13 +21,10 @@ module MultipleMan
     end
 
     def identifier_for_record
-      puts identifier.class
-      if identifier.class == Symbol
-        record.send(identifier)
-      elsif identifier.class == Proc
+      if identifier.class == Proc
         identifier.call(record)
       else
-        record.id
+        record.send(identifier)
       end
     end
 
