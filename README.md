@@ -2,6 +2,8 @@
 
 [![Code Climate](https://codeclimate.com/github/influitive/multiple_man.png)](https://codeclimate.com/github/influitive/multiple_man)
 
+[![CircleCI](https://circleci.com/gh/influitive/multiple_man)](https://circleci.com/gh/influitive/multiple_man.png)]
+
 MultipleMan synchronizes your ActiveRecord models between Rails
 apps, using RabbitMQ to send messages between your applications.
 It's heavily inspired by Promiscuous, but differs in a few ways:
