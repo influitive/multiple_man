@@ -2,25 +2,26 @@ require 'bunny'
 
 module MultipleMan
   class Connection
-    def self.connect
-      MultipleMan.logger.info "Connecting to #{MultipleMan.configuration.connection}"
-      connection = Bunny.new(MultipleMan.configuration.connection)
-      begin
-        MultipleMan.logger.info "Starting connection"
+    def self.connection
+      @connection ||= begin
+        connection = Bunny.new(MultipleMan.configuration.connection)
+        MultipleMan.logger.info "Connecting to #{MultipleMan.configuration.connection}"
         connection.start
-        yield new(connection) if block_given?
-      ensure
-        MultipleMan.logger.info "Closing connection"
-        connection.close
+        connection
       end
     end
 
-    def initialize(connection)
-      self.connection = connection
+    def self.connect
+      channel = connection.create_channel
+      begin
+        yield new(channel) if block_given?
+      ensure
+        channel.close
+      end
     end
 
-    def channel
-      @channel ||= connection.create_channel
+    def initialize(channel)
+      self.channel = channel
     end
 
     def topic
@@ -33,7 +34,7 @@ module MultipleMan
 
   private
 
-    attr_accessor :connection
+    attr_accessor :channel
 
   end
 end

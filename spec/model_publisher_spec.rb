@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe MultipleMan::ModelPublisher do 
-  let(:channel_stub) { double(Bunny::Channel, topic: topic_stub)}
+  let(:channel_stub) { double(Bunny::Channel, topic: topic_stub, close: nil)}
   let(:topic_stub) { double(Bunny::Exchange, publish: nil) }
 
   before {
@@ -9,7 +9,7 @@ describe MultipleMan::ModelPublisher do
       config.topic_name = "app"
     end
 
-    MultipleMan::Connection.any_instance.stub(:channel).and_return(channel_stub)
+    MultipleMan::Connection.stub(:connection).and_return(double(Bunny, create_channel: channel_stub))
   }
 
   class MockObject
