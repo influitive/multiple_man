@@ -34,6 +34,8 @@ module MultipleMan
       MultipleMan.configuration.topic_name
     end
 
+    delegate :queue, to: :channel
+    
   private
 
     attr_accessor :channel

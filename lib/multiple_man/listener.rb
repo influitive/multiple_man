@@ -43,7 +43,7 @@ module MultipleMan
     end
 
     def queue
-      connection.channel.queue(subscription.queue_name, durable: true, auto_delete: false)
+      connection.queue(subscription.queue_name, durable: true, auto_delete: false)
     end
 
   private
