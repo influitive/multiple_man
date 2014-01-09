@@ -1,4 +1,5 @@
 require 'bunny'
+require 'connection_pool'
 
 module MultipleMan
   class Connection
@@ -11,13 +12,14 @@ module MultipleMan
       end
     end
 
-    def self.open_channel
-      Thread.current[:multiple_man_channel] ||= connection.create_channel
+    def self.channel_pool
+      @channel_pool ||= ConnectionPool.new(size: 25, timeout: 5) { connection.create_channel }
     end
 
     def self.connect
-      channel = open_channel
-      yield new(channel) if block_given?
+      channel_pool.with do |channel|
+        yield new(channel) if block_given?
+      end
     end
 
     def initialize(channel)

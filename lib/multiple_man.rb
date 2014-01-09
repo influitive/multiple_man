@@ -14,14 +14,22 @@ module MultipleMan
   require 'multiple_man/listener'
 
   def self.logger
-    MultipleMan.configuration.logger
+    configuration.logger
   end
 
   def self.disable!
-    MultipleMan.configuration.enabled = false
+    configuration.enabled = false
   end
 
   def self.enable!
-    MultipleMan.configuration.enabled = true
+    configuration.enabled = true
+  end
+
+  def self.error(ex)
+    if configuration.error_handler
+      configuration.error_handler.call(ex)
+    else
+      raise ex
+    end
   end
 end

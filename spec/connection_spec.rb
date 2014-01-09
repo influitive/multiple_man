@@ -9,7 +9,7 @@ describe MultipleMan::Connection do
     it "should open a connection and a channel" do
       mock_bunny.should_receive(:start)
       Bunny.should_receive(:new).and_return(mock_bunny)
-      mock_bunny.should_receive(:create_channel).and_return(mock_channel)
+      mock_bunny.should_receive(:create_channel).exactly(25).times
 
       described_class.connect
     end

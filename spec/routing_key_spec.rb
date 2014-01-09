@@ -11,7 +11,7 @@ describe MultipleMan::RoutingKey do
   end
 
   describe "to_s" do
-    subject { described_class.new(MockObject.new, operation).to_s }
+    subject { described_class.new("MockObject", operation).to_s }
 
     context "creating" do
       let(:operation) { :create }
@@ -29,7 +29,7 @@ describe MultipleMan::RoutingKey do
     end
 
     context "not specified" do
-      subject { described_class.new(MockObject.new).to_s }
+      subject { described_class.new("MockObject").to_s }
       it { should == "app.MockObject.#" }
     end
   end

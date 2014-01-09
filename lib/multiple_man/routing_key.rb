@@ -8,19 +8,15 @@ module MultipleMan
     end
 
     def to_s
-      "#{topic_name}.#{klass.name}.#{operation}"
+      "#{topic_name}.#{klass}.#{operation}"
     end
 
     attr_reader :operation
-    attr_reader :klass
+    attr_accessor :klass
 
     def operation=(value)
       raise "Operation #{value} is not recognized" unless ALLOWED_OPERATIONS.include?(value)
       @operation = value
-    end
-
-    def klass=(value)
-      @klass = (value.is_a?(Class) ? value : value.class)
     end
 
   private

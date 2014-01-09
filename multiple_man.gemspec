@@ -19,8 +19,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler", "~> 1.3"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "rspec"
-  spec.add_runtime_dependency     "bunny"
-  spec.add_runtime_dependency     "activesupport"
+  spec.add_development_dependency "rake", '~> 10.1.0'
+  spec.add_development_dependency "rspec", '~> 2.14.1'
+  spec.add_runtime_dependency     "bunny", '>= 1.0'
+  spec.add_runtime_dependency     "activesupport", '>= 3.0'
+  spec.add_runtime_dependency     "connection_pool", ">= 1.2"
 end

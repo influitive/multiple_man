@@ -36,6 +36,7 @@ module MultipleMan
         subscription.send(operation, JSON.parse(payload).with_indifferent_access)
       rescue Exception => ex
         MultipleMan.logger.error "   Error - #{ex.message}"
+        MultipleMan.error(ex)
       else
         MultipleMan.logger.info "   Successfully processed!"
       end
