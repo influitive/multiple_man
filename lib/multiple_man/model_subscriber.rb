@@ -5,16 +5,18 @@ module MultipleMan
     class << self
       attr_accessor :subscriptions
 
-      def register(klass)
-        self.subscriptions << new(klass)
+      def register(klass, options)
+        self.subscriptions << new(klass, options)
       end
     end
 
-    def initialize(klass)
+    def initialize(klass, options)
       self.klass = klass
+      self.options = options
     end
 
-    attr_reader :klass    
+    attr_reader :klass
+    attr_accessor :options
 
     def create(payload)
       model = find_model(payload[:id])

@@ -1,5 +1,6 @@
 require 'bunny'
 require 'connection_pool'
+require 'active_support/core_ext/module'
 
 module MultipleMan
   class Connection
