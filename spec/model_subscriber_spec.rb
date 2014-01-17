@@ -16,7 +16,9 @@ describe MultipleMan::ModelSubscriber do
     it "should create a new model" do
       mock_object = MockClass.new
       MockClass.stub(:find_or_initialize_by).with(multiple_man_identifier: 5).and_return(mock_object)
-      mock_object.should_receive(:attributes=)
+      mock_populator = double(MultipleMan::ModelPopulator)
+      MultipleMan::ModelPopulator.should_receive(:new).and_return(mock_populator)
+      mock_populator.should_receive(:populate).with({a: 1, b: 2}, nil)
       mock_object.should_receive(:save!)
 
       MultipleMan::ModelSubscriber.new(MockClass, {}).create({id: 5, data:{a: 1, b: 2}})

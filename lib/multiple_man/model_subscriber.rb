@@ -20,7 +20,7 @@ module MultipleMan
 
     def create(payload)
       model = find_model(payload[:id])
-      model.attributes = payload[:data]
+      ModelPopulator.new(model).populate(payload[:data], options[:fields])
       model.save!
     end
 
