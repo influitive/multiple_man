@@ -13,6 +13,7 @@ module MultipleMan
   require 'multiple_man/routing_key'
   require 'multiple_man/listener'
   require 'multiple_man/model_populator'
+  require 'multiple_man/identity'
 
   def self.logger
     configuration.logger

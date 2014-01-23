@@ -3,33 +3,21 @@ require 'json'
 module MultipleMan
   class AttributeExtractor
 
-    def initialize(record, fields, identifier)
+    def initialize(record, fields)
       raise "Fields must be specified" unless fields
       
       self.record = record
-      self.fields = fields 
-      self.identifier = identifier || :id
+      self.fields = fields
     end
 
     def data
-      {
-        id: identifier_for_record,
-        data: Hash[fields.map do |field|
-          [field, record.send(field)]
-        end]
-      }
+      Hash[fields.map do |field|
+        [field, record.send(field)]
+      end]
     end
 
-    def identifier_for_record
-      if identifier.class == Proc
-        identifier.call(record)
-      else
-        record.send(identifier)
-      end
-    end
-
-    def to_json
-      data.to_json
+    def as_json
+      data
     end
 
   private

@@ -23,7 +23,6 @@ module MultipleMan
 
     def populate_field(field, value)
       setter = "#{field}="
-      puts "Setter - #{setter}, value #{value}, respond_to?: #{record.respond_to?(setter)}, should_raise: #{should_raise?}"
       if record.respond_to?(setter)
         record.send(setter, value)
       elsif should_raise?

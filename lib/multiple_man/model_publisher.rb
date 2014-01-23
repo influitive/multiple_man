@@ -33,7 +33,20 @@ module MultipleMan
     end
 
     def record_data(record)
-      AttributeExtractor.new(record, fields, identifier).to_json
+      { 
+        id: Identity.new(record, identifier).value,
+        data: serializer(record).as_json
+      }.to_json
+    end
+
+    # Todo - can we unify the constructor for serializers
+    # and attribute extractors and simplify this?
+    def serializer(record)
+      if options[:with]
+        options[:with].new(record)
+      else
+        AttributeExtractor.new(record, fields)
+      end
     end
 
     def fields
