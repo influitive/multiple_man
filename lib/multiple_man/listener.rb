@@ -8,7 +8,7 @@ module MultipleMan
       def start(connection)
         MultipleMan.logger.info "Starting listeners."
         self.connection = connection
-        ModelSubscriber.subscriptions.each do |subscription|
+        Subscribers::Registry.subscriptions.each do |subscription|
           new(subscription).listen
         end
       end

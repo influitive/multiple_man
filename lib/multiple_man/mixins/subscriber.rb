@@ -6,7 +6,7 @@ module MultipleMan
 
     module ClassMethods
       def subscribe(options)
-        MultipleMan::ModelSubscriber.register(self, options)
+        Subscribers::Registry.register(Subscribers::ModelSubscriber.new(self, options))
       end
     end
   end

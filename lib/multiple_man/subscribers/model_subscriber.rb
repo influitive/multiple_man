@@ -1,14 +1,5 @@
-module MultipleMan
+module MultipleMan::Subscribers
   class ModelSubscriber
-
-    @subscriptions = []
-    class << self
-      attr_accessor :subscriptions
-
-      def register(klass, options)
-        self.subscriptions << new(klass, options)
-      end
-    end
 
     def initialize(klass, options)
       self.klass = klass
@@ -20,7 +11,7 @@ module MultipleMan
 
     def create(payload)
       model = find_model(payload[:id])
-      ModelPopulator.new(model).populate(payload[:data], options[:fields])
+      MultipleMan::ModelPopulator.new(model).populate(payload[:data], options[:fields])
       model.save!
     end
 
@@ -32,7 +23,7 @@ module MultipleMan
     end
 
     def routing_key
-      RoutingKey.new(klass).to_s
+      MultipleMan::RoutingKey.new(klass).to_s
     end
 
     def queue_name
