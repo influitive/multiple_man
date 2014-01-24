@@ -22,7 +22,7 @@ module MultipleMan
     def push_record(connection, record)
       data = record_data(record)
       routing_key = RoutingKey.new(record_type(record), operation).to_s
-      MultipleMan.logger.info("  Record Data: #{data} | Routing Key: #{routing_key}")
+      MultipleMan.logger.debug("  Record Data: #{data} | Routing Key: #{routing_key}")
       connection.topic.publish(data, routing_key: routing_key)
     rescue Exception => ex
       MultipleMan.error(ex)

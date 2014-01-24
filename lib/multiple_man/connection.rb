@@ -7,7 +7,7 @@ module MultipleMan
     def self.connection
       @connection ||= begin
         connection = Bunny.new(MultipleMan.configuration.connection)
-        MultipleMan.logger.info "Connecting to #{MultipleMan.configuration.connection}"
+        MultipleMan.logger.debug "Connecting to #{MultipleMan.configuration.connection}"
         connection.start
         connection
       end

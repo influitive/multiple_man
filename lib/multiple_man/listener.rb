@@ -6,7 +6,7 @@ module MultipleMan
 
     class << self
       def start(connection)
-        MultipleMan.logger.info "Starting listeners."
+        MultipleMan.logger.debug "Starting listeners."
         self.connection = connection
         Subscribers::Registry.subscriptions.each do |subscription|
           new(subscription).listen
@@ -38,7 +38,7 @@ module MultipleMan
         MultipleMan.logger.error "   Error - #{ex.message}"
         MultipleMan.error(ex)
       else
-        MultipleMan.logger.info "   Successfully processed!"
+        MultipleMan.logger.debug "   Successfully processed!"
       end
     end
 

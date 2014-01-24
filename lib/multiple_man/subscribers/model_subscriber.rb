@@ -1,12 +1,11 @@
-module MultipleMan::Subscribers
-  class ModelSubscriber
+module MultipleMan::Subscribers 
+  class ModelSubscriber < Base
 
     def initialize(klass, options)
-      self.klass = klass
+      super(klass)
       self.options = options
     end
 
-    attr_reader :klass
     attr_accessor :options
 
     def create(payload)
@@ -20,14 +19,6 @@ module MultipleMan::Subscribers
     def destroy(payload)
       model = find_model(payload[:id])
       model.destroy!
-    end
-
-    def routing_key
-      MultipleMan::RoutingKey.new(klass).to_s
-    end
-
-    def queue_name
-      "#{MultipleMan.configuration.topic_name}.#{MultipleMan.configuration.app_name}.#{klass.name}"
     end
 
   private
