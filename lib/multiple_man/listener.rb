@@ -8,6 +8,8 @@ module MultipleMan
       def start(connection)
         MultipleMan.logger.debug "Starting listeners."
         self.connection = connection
+        MultipleMan.logger.debug Subscribers::Registry.subscriptions.to_json
+
         Subscribers::Registry.subscriptions.each do |subscription|
           new(subscription).listen
         end
@@ -35,7 +37,7 @@ module MultipleMan
         operation = delivery_info.routing_key.split(".").last
         subscription.send(operation, JSON.parse(payload).with_indifferent_access)
       rescue Exception => ex
-        MultipleMan.logger.error "   Error - #{ex.message}"
+        MultipleMan.logger.error "   Error - #{ex.message}\n\n#{ex.backtrace}"
         MultipleMan.error(ex)
       else
         MultipleMan.logger.debug "   Successfully processed!"

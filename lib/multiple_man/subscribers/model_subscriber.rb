@@ -10,7 +10,7 @@ module MultipleMan::Subscribers
 
     def create(payload)
       model = find_model(payload[:id])
-      MultipleMan::ModelPopulator.new(model).populate(payload[:data], options[:fields])
+      MultipleMan::ModelPopulator.new(model, options[:fields]).populate(payload[:data])
       model.save!
     end
 
