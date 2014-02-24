@@ -34,14 +34,17 @@ module MultipleMan
     def process_message(delivery_info, payload)
       MultipleMan.logger.info "Processing message for #{delivery_info.routing_key}."
       begin
-        operation = delivery_info.routing_key.split(".").last
-        subscription.send(operation, JSON.parse(payload).with_indifferent_access)
+        subscription.send(operation(delivery_info), JSON.parse(payload).with_indifferent_access)
       rescue Exception => ex
         MultipleMan.logger.error "   Error - #{ex.message}\n\n#{ex.backtrace}"
         MultipleMan.error(ex)
       else
         MultipleMan.logger.debug "   Successfully processed!"
       end
+    end
+
+    def operation(delivery_info)
+      delivery_info.routing_key.split(".").last
     end
 
     def queue
