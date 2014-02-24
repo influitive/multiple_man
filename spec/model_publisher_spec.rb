@@ -25,20 +25,20 @@ describe MultipleMan::ModelPublisher do
     end
   end
 
-  subject { described_class.new(:create, fields: [:foo]) }
+  subject { described_class.new(fields: [:foo]) }
 
-  describe "after_commit" do
+  describe "publish" do
     it "should send the jsonified version of the model to the correct routing key" do
       MultipleMan::AttributeExtractor.any_instance.should_receive(:as_json).and_return({foo: "bar"})
       topic_stub.should_receive(:publish).with('{"id":"10","data":{"foo":"bar"}}', routing_key: "app.MockObject.create")
-      described_class.new(:create, fields: [:foo]).after_commit(MockObject.new)
+      described_class.new(fields: [:foo]).publish(MockObject.new)
     end
 
     it "should call the error handler on error" do
       ex = Exception.new("Bad stuff happened")
       topic_stub.stub(:publish) { raise ex }
       MultipleMan.should_receive(:error).with(ex)
-      described_class.new(:create, fields: [:foo]).after_commit(MockObject.new)
+      described_class.new(fields: [:foo]).publish(MockObject.new)
     end
   end
 
@@ -51,12 +51,12 @@ describe MultipleMan::ModelPublisher do
       end
     end
 
-    subject { described_class.new(:create, with: MySerializer) }
+    subject { described_class.new(with: MySerializer) }
 
     it "should get its data from the serializer" do
       obj = MockObject.new
       topic_stub.should_receive(:publish).with('{"id":"10","data":{"a":"yes"}}', routing_key: "app.MockObject.create")
-      subject.after_commit(obj)
+      subject.publish(obj)
     end
   end
 

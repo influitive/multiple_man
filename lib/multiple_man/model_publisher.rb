@@ -1,25 +1,25 @@
 module MultipleMan
   class ModelPublisher
 
-    def initialize(operation, options = {})
-      self.operation = operation
+    def initialize(options = {})
       self.options = options
     end
 
-    def after_commit(record)
+    def publish(records, operation=:create)
       return unless MultipleMan.configuration.enabled
 
-      MultipleMan.logger.info("Publishing #{record}")
       Connection.connect do |connection|
-        push_record(connection, record)
+        all_records(records) do |record|
+          push_record(connection, record, operation)
+        end
       end
     end
 
   private
 
-    attr_accessor :operation, :options
+    attr_accessor :options
 
-    def push_record(connection, record)
+    def push_record(connection, record, operation)
       data = record_data(record)
       routing_key = RoutingKey.new(record_type(record), operation).to_s
       MultipleMan.logger.debug("  Record Data: #{data} | Routing Key: #{routing_key}")
@@ -27,6 +27,17 @@ module MultipleMan
     rescue Exception => ex
       MultipleMan.error(ex)
     end
+
+    def all_records(records)
+      if records.respond_to?(:find_each)
+        records.find_each {|r| yield r }
+      elsif records.respond_to?(:each)
+        records.each {|r| yield r }
+      else
+        yield records
+      end
+    end
+
 
     def record_type(record)
       options[:as] || record.class.name
