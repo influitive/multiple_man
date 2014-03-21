@@ -25,8 +25,8 @@ module MultipleMan
     attr_accessor :subscription
 
     def listen
-      MultipleMan.logger.info "Listening for #{subscription.klass} with routing key #{subscription.routing_key}."
-      queue.bind(connection.topic, routing_key: subscription.routing_key).subscribe do |delivery_info, meta_data, payload|
+      MultipleMan.logger.info "Listening for #{subscription.klass} with routing key #{routing_key}."
+      queue.bind(connection.topic, routing_key: routing_key).subscribe do |delivery_info, meta_data, payload|
         process_message(delivery_info, payload)
       end
     end
@@ -49,6 +49,10 @@ module MultipleMan
 
     def queue
       connection.queue(subscription.queue_name, durable: true, auto_delete: false)
+    end
+
+    def routing_key
+      subscription.routing_key
     end
 
   private

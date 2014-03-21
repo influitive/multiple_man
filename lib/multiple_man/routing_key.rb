@@ -1,6 +1,6 @@
 module MultipleMan
   class RoutingKey
-    ALLOWED_OPERATIONS = [:create, :update, :destroy, :"#"]
+    ALLOWED_OPERATIONS = [:create, :update, :destroy, :seed, :"#"]
 
     def initialize(klass, operation = :"#")
       self.klass = klass

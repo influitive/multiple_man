@@ -19,8 +19,12 @@ module MultipleMan::Subscribers
       # noop
     end
 
-    def routing_key
-      MultipleMan::RoutingKey.new(klass).to_s
+    def seed
+      # noop
+    end
+
+    def routing_key(operation = :'#')
+      MultipleMan::RoutingKey.new(klass, operation).to_s
     end
 
     def queue_name

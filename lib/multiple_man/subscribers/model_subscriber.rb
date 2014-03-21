@@ -1,4 +1,4 @@
-module MultipleMan::Subscribers 
+module MultipleMan::Subscribers
   class ModelSubscriber < Base
 
     def initialize(klass, options)
@@ -15,6 +15,7 @@ module MultipleMan::Subscribers
     end
 
     alias_method :update, :create
+    alias_method :seed, :create
 
     def destroy(payload)
       model = find_model(payload[:id])
