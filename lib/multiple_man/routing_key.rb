@@ -8,7 +8,11 @@ module MultipleMan
     end
 
     def to_s
-      "#{topic_name}.#{klass}.#{operation}"
+      if operation == :seed
+        "#{topic_name}.#{operation}.#{klass}"
+      else
+        "#{topic_name}.#{klass}.#{operation}"
+      end
     end
 
     attr_reader :operation

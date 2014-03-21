@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MultipleMan::RoutingKey do 
+describe MultipleMan::RoutingKey do
   class MockObject
   end
 
@@ -26,6 +26,11 @@ describe MultipleMan::RoutingKey do
     context "destroying" do
       let(:operation) { :destroy }
       it { should == "app.MockObject.destroy" }
+    end
+
+    context "seeding" do
+      let(:operation) { :seed }
+      it { should == "app.seed.MockObject" }
     end
 
     context "not specified" do
