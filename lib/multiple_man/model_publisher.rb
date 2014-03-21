@@ -28,11 +28,11 @@ module MultipleMan
       MultipleMan.error(ex)
     end
 
-    def all_records(records)
+    def all_records(records, &block)
       if records.respond_to?(:find_each)
-        records.find_each {|r| yield r }
+        records.find_each(&block)
       elsif records.respond_to?(:each)
-        records.each {|r| yield r }
+        records.each(&block)
       else
         yield records
       end
@@ -44,7 +44,7 @@ module MultipleMan
     end
 
     def record_data(record)
-      { 
+      {
         id: Identity.new(record, identifier).value,
         data: serializer(record).as_json
       }.to_json
@@ -67,6 +67,6 @@ module MultipleMan
     def identifier
       options[:identifier]
     end
-    
+
   end
 end
