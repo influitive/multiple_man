@@ -25,7 +25,11 @@ module MultipleMan::Subscribers
   private
 
     def find_model(id)
-      klass.find_or_initialize_by(multiple_man_identifier: id)
+      klass.where(find_conditions(id)).first
+    end
+
+    def find_conditions(id)
+      id.kind_of?(Hash) ? id : {multiple_man_identifier: id}
     end
 
     attr_writer :klass

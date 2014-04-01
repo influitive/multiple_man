@@ -45,7 +45,7 @@ module MultipleMan
 
     def record_data(record)
       {
-        id: Identity.new(record, identifier).value,
+        id: Identity.build(record, options).value,
         data: serializer(record).as_json
       }.to_json
     end
