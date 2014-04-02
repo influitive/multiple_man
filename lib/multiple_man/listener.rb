@@ -18,6 +18,8 @@ module MultipleMan
       attr_accessor :connection
     end
 
+    delegate :queue_name, to: :subscription
+
     def initialize(subscription)
       self.subscription = subscription
     end
@@ -49,7 +51,7 @@ module MultipleMan
     end
 
     def queue
-      connection.queue(subscription.queue_name, durable: true, auto_delete: false)
+      connection.queue(queue_name, durable: true, auto_delete: false)
     end
 
     def routing_key

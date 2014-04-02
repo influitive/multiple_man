@@ -8,5 +8,9 @@ module MultipleMan
     def operation(delivery_info)
       "create"
     end
+
+    def queue
+      connection.queue(subscription.queue_name + ".seed", auto_delete: true)
+    end
   end
 end
