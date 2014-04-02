@@ -26,7 +26,7 @@ module MultipleMan
 
     def listen
       MultipleMan.logger.info "Listening for #{subscription.klass} with routing key #{routing_key}."
-      queue.bind(connection.topic, routing_key: routing_key).subscribe() do |delivery_info, meta_data, payload|
+      queue.bind(connection.topic, routing_key: routing_key).subscribe(ack: true) do |delivery_info, meta_data, payload|
         process_message(delivery_info, payload)
       end
     end
@@ -40,7 +40,7 @@ module MultipleMan
         MultipleMan.error(ex)
       else
         MultipleMan.logger.debug "   Successfully processed!"
-        connection.acknowledge(delivery_info.delivery_tag, false)
+        queue.channel.acknowledge(delivery_info.delivery_tag, false)
       end
     end
 

@@ -17,6 +17,7 @@ module MultipleMan
   require 'multiple_man/seeder_listener'
   require 'multiple_man/model_populator'
   require 'multiple_man/identity'
+  require 'multiple_man/publish'
 
   def self.logger
     configuration.logger

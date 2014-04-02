@@ -25,7 +25,7 @@ module MultipleMan::Subscribers
   private
 
     def find_model(id)
-      klass.where(find_conditions(id)).first
+      klass.where(find_conditions(id)).first || klass.new
     end
 
     def find_conditions(id)
