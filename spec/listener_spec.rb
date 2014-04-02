@@ -39,7 +39,7 @@ describe MultipleMan::Listener do
   specify "process_message should send the correct data" do
     connection_stub = double(MultipleMan::Connection).as_null_object
     MultipleMan::Listener.stub(:connection).and_return(connection_stub)
-    subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#")
+    subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#").as_null_object
     listener = MultipleMan::Listener.new(subscriber)
 
     connection_stub.should_receive(:acknowledge)
