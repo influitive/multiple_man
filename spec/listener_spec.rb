@@ -37,8 +37,12 @@ describe MultipleMan::Listener do
   end
 
   specify "process_message should send the correct data" do
+    connection_stub = double(MultipleMan::Connection).as_null_object
+    MultipleMan::Listener.stub(:connection).and_return(connection_stub)
     subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#")
     listener = MultipleMan::Listener.new(subscriber)
+
+    connection_stub.should_receive(:acknowledge)
     subscriber.should_receive(:create).with({"a" => 1, "b" => 2})
     listener.process_message(OpenStruct.new(routing_key: "app.MockClass1.create"), '{"a":1,"b":2}')
   end
