@@ -12,6 +12,14 @@ namespace :multiple_man do
   def run_listener(listener)
     Rails.application.eager_load!
 
+    if defined?(ActiveRecord::Base)
+      config = ActiveRecord::Base.configurations[Rails.env] ||
+                  Rails.application.config.database_configuration[Rails.env]
+      config['reaping_frequency'] = ENV['DB_REAP_FREQ'] || 10 # seconds
+      config['pool']            =   ENV['DB_POOL'] || 20
+      ActiveRecord::Base.establish_connection(config)
+    end
+
     channel = MultipleMan::Connection.connection.create_channel(nil, MultipleMan.configuration.worker_concurrency)
     connection = MultipleMan::Connection.new(channel)
 
