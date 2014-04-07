@@ -12,7 +12,7 @@ namespace :multiple_man do
   def run_listener(listener)
     Rails.application.eager_load!
 
-    MultipleMan::Connection.connect do |connection|
+    MultipleMan::ListenerConnection.connect do |connection|
       listener.start(connection)
 
       while(true)

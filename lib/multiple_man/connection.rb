@@ -42,4 +42,10 @@ module MultipleMan
     attr_accessor :channel
 
   end
+
+  class ListenerConnection < Connection
+    def self.channel_pool
+      @channel_pool ||= ConnectionPool.new(size: 1, timeout: 5) { connection.create_channel(nil, MultipleMan.configuration.worker_concurrency) }
+    end
+  end
 end

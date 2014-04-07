@@ -6,6 +6,7 @@ module MultipleMan
       self.app_name = Rails.application.class.parent.to_s if defined?(Rails)
       self.enabled = true
       self.channel_pool_size = 5
+      self.worker_concurrency = 1
     end
 
     def logger
@@ -16,7 +17,8 @@ module MultipleMan
       @error_handler = block
     end
 
-    attr_accessor :topic_name, :app_name, :connection, :enabled, :channel_pool_size, :error_handler
+    attr_accessor :topic_name, :app_name, :connection, :enabled, :channel_pool_size, :error_handler, 
+                  :worker_concurrency
     attr_writer :logger
   end
 
