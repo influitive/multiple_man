@@ -40,6 +40,9 @@ module MultipleMan
       rescue Exception => ex
         MultipleMan.logger.error "   Error - #{ex.message}\n\n#{ex.backtrace}"
         MultipleMan.error(ex)
+
+        # Requeue the message
+        queue.channel.nack(delivery_info.delivery_tag, false, true)
       else
         MultipleMan.logger.debug "   Successfully processed!"
         queue.channel.acknowledge(delivery_info.delivery_tag, false)
