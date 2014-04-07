@@ -12,12 +12,13 @@ namespace :multiple_man do
   def run_listener(listener)
     Rails.application.eager_load!
 
-    MultipleMan::ListenerConnection.connect do |connection|
-      listener.start(connection)
+    channel = MultipleMan::Connection.connection.create_channel(nil, MultipleMan.configuration.worker_concurrency)
+    connection = MultipleMan::Connection.new(channel)
 
-      while(true)
-        sleep 10
-      end
+    listener.start(connection)
+
+    while(true)
+      sleep 10
     end
   end
 end
