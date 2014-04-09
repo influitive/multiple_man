@@ -2,13 +2,17 @@ require 'spec_helper'
 
 describe MultipleMan::ModelPopulator do 
   class MockModel
-    attr_accessor :a, :b
+    attr_accessor :a, :b, :multiple_man_identifier
   end
 
   describe "populate" do
     let(:model) { MockModel.new }
     let(:data) { { a: 1, b: 2 } }
-    subject { described_class.new(model, fields).populate(data) }
+    let(:id) { { multiple_man_identifier: 'app_1' }}
+    let(:fields) { nil }
+    subject { described_class.new(model, fields).populate(id: id, data: data) }
+
+    its(:multiple_man_identifier) { should == 'app_1' }
 
     context "with fields defined" do
       let(:fields) { [:a] }

@@ -11,10 +11,10 @@ describe MultipleMan::Subscribers::ModelSubscriber do
       MockClass.stub(:where).and_return([mock_object])
       mock_populator = double(MultipleMan::ModelPopulator)
       MultipleMan::ModelPopulator.should_receive(:new).and_return(mock_populator)
-      mock_populator.should_receive(:populate).with({a: 1, b: 2})
+      mock_populator.should_receive(:populate).with(id: {id:5}, data: {a: 1, b: 2})
       mock_object.should_receive(:save!)
 
-      described_class.new(MockClass, {}).create({id: 5, data:{a: 1, b: 2}})
+      described_class.new(MockClass, {}).create({id: {id: 5}, data:{a: 1, b: 2}})
     end
   end
 

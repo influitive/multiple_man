@@ -9,8 +9,9 @@ module MultipleMan::Subscribers
     attr_accessor :options
 
     def create(payload)
-      model = find_model(payload[:id])
-      MultipleMan::ModelPopulator.new(model, options[:fields]).populate(payload[:data])
+      id = payload[:id]
+      model = find_model(id)
+      MultipleMan::ModelPopulator.new(model, options[:fields]).populate(id: find_conditions(id), data: payload[:data])
       model.save!
     end
 

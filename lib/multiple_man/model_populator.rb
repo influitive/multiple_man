@@ -6,7 +6,8 @@ module MultipleMan
       self.fields = fields
     end
 
-    def populate(data)
+    def populate(payload)
+      data = payload[:id].merge(payload[:data])
       fields_for(data).each do |field|
         populate_field(field, data[field])
       end
