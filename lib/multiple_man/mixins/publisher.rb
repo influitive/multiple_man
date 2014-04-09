@@ -1,3 +1,5 @@
+require 'active_support/core_ext'
+
 module MultipleMan
   module Publisher
     def Publisher.included(base)
