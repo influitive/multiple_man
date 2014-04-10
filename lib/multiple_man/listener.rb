@@ -38,15 +38,19 @@ module MultipleMan
       begin
         subscription.send(operation(delivery_info), JSON.parse(payload).with_indifferent_access)
       rescue Exception => ex
-        MultipleMan.logger.error "   Error - #{ex.message}\n\n#{ex.backtrace}"
-        MultipleMan.error(ex)
-
-        # Requeue the message
-        queue.channel.nack(delivery_info.delivery_tag, false, true)
+        handle_error(ex, delivery_info)
       else
         MultipleMan.logger.debug "   Successfully processed!"
         queue.channel.acknowledge(delivery_info.delivery_tag, false)
       end
+    end
+
+    def handle_error(ex, delivery_info)
+      MultipleMan.logger.error "   Error - #{ex.message}\n\n#{ex.backtrace}"
+      MultipleMan.error(ex)
+
+      # Requeue the message
+      queue.channel.nack(delivery_info.delivery_tag, false, true)
     end
 
     def operation(delivery_info)
