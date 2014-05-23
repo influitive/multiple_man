@@ -1,7 +1,7 @@
 require "multiple_man/version"
 
 module MultipleMan
-  require 'multiple_man/railtie' if defined?(Rake)
+  require 'multiple_man/railtie' if defined?(Rails)
 
   require 'multiple_man/mixins/publisher'
   require 'multiple_man/mixins/subscriber'
