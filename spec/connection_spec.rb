@@ -9,13 +9,13 @@ describe MultipleMan::Connection do
     it "should open a connection and a channel" do
       mock_bunny.should_receive(:start)
       Bunny.should_receive(:new).and_return(mock_bunny)
-      mock_bunny.should_receive(:create_channel).any_number_of_times
+      mock_bunny.should_receive(:create_channel).once
 
-      described_class.connect
+      described_class.connect { }
     end
   end
 
-  subject { described_class.new(mock_bunny) }
+  subject { described_class.new(mock_channel) }
 
   its(:topic_name) { should == MultipleMan.configuration.topic_name }
 
