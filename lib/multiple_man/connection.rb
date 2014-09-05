@@ -13,13 +13,11 @@ module MultipleMan
       end
     end
 
-    def self.channel
-      # TODO : What to do in case of closed channel
-      Thread.current[:multiple_man_channel] ||= connection.create_channel
-    end
-
     def self.connect
-      yield new(self.channel) if block_given?
+      channel = connection.create_channel
+      yield new(channel) if block_given?
+    ensure
+      channel.close
     end
 
     def initialize(channel)

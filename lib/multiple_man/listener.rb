@@ -5,28 +5,33 @@ module MultipleMan
   class Listener
 
     class << self
-      def start(connection)
+      def start
         MultipleMan.logger.debug "Starting listeners."
-        self.connection = connection
         MultipleMan.logger.debug Subscribers::Registry.subscriptions.to_json
 
         Subscribers::Registry.subscriptions.each do |subscription|
           new(subscription).listen
         end
       end
-
-      attr_accessor :connection
     end
 
     delegate :queue_name, to: :subscription
 
     def initialize(subscription)
       self.subscription = subscription
+      self.init_connection
     end
 
-    attr_accessor :subscription
+    def init_connection
+      channel = MultipleMan::Connection.connection.create_channel(nil, MultipleMan.configuration.worker_concurrency)
+      channel.prefetch(100)
+      self.connection = MultipleMan::Connection.new(channel)
+    end
+
+    attr_accessor :subscription, :connection
 
     def listen
+      
       MultipleMan.logger.info "Listening for #{subscription.klass} with routing key #{routing_key}."
       queue.bind(connection.topic, routing_key: routing_key).subscribe(ack: true) do |delivery_info, meta_data, payload|
         process_message(delivery_info, payload)
@@ -63,12 +68,6 @@ module MultipleMan
 
     def routing_key
       subscription.routing_key
-    end
-
-  private
-
-    def connection
-      self.class.connection
     end
 
   end

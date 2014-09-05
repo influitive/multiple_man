@@ -4,6 +4,8 @@ describe MultipleMan::Listener do
   class MockClass1; end
   class MockClass2; end
 
+  before { MultipleMan::Connection.stub(:connection).and_return(double(Bunny).as_null_object)}
+
   describe "start" do
     it "should listen to each subscription" do
       MultipleMan::Subscribers::Registry.stub(:subscriptions).and_return([
@@ -18,7 +20,7 @@ describe MultipleMan::Listener do
       # ease of stubbing.
       mock_listener.should_receive(:listen).twice
 
-      MultipleMan::Listener.start(double(Bunny))
+      MultipleMan::Listener.start
     end
   end
 
@@ -27,7 +29,7 @@ describe MultipleMan::Listener do
     let(:queue_stub) { double(Bunny::Queue, bind: bind_stub) }
     let(:bind_stub) { double(:bind, subscribe: nil)}
 
-    before { MultipleMan::Listener.stub(:connection).and_return(connection_stub) }
+    before { MultipleMan::Connection.stub(:new).and_return(connection_stub) }
 
     it "should listen to the right topic, and for all updates to a model" do
       listener = MultipleMan::Listener.new(double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#", queue_name: "MockClass1"))
@@ -38,7 +40,7 @@ describe MultipleMan::Listener do
 
   specify "process_message should send the correct data" do
     connection_stub = double(MultipleMan::Connection).as_null_object
-    MultipleMan::Listener.stub(:connection).and_return(connection_stub)
+    MultipleMan::Connection.stub(:new).and_return(connection_stub)
     subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#").as_null_object
     listener = MultipleMan::Listener.new(subscriber)
 
@@ -49,7 +51,7 @@ describe MultipleMan::Listener do
 
   it "should nack on failure" do
     connection_stub = double(MultipleMan::Connection).as_null_object
-    MultipleMan::Listener.stub(:connection).and_return(connection_stub)
+    MultipleMan::Connection.stub(:new).and_return(connection_stub)
     subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#").as_null_object
     listener = MultipleMan::Listener.new(subscriber)
 
