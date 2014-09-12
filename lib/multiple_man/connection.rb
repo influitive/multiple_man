@@ -24,12 +24,11 @@ module MultipleMan
       channel.close if channel
     end
 
+    attr_reader :topic
+
     def initialize(channel)
       self.channel = channel
-    end
-
-    def topic
-      @topic ||= channel.topic(topic_name)
+      self.topic = channel.topic(topic_name)
     end
 
     def topic_name
@@ -41,6 +40,7 @@ module MultipleMan
   private
 
     attr_accessor :channel
+    attr_writer :topic
 
   end
 end
