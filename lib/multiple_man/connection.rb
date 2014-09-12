@@ -4,12 +4,18 @@ require 'active_support/core_ext/module'
 
 module MultipleMan
   class Connection
+    def self.mutex
+      @mutex ||= Mutex.new
+    end
+
     def self.connection
-      @connection ||= begin
-        connection = Bunny.new(MultipleMan.configuration.connection)
-        MultipleMan.logger.debug "Connecting to #{MultipleMan.configuration.connection}"
-        connection.start
-        connection
+      mutex.synchronize do 
+        @connection ||= begin
+          connection = Bunny.new(MultipleMan.configuration.connection)
+          MultipleMan.logger.debug "Connecting to #{MultipleMan.configuration.connection}"
+          connection.start
+          connection
+        end
       end
     end
 
@@ -17,7 +23,7 @@ module MultipleMan
       channel = connection.create_channel
       yield new(channel) if block_given?
     ensure
-      channel.close
+      channel.close if channel
     end
 
     def initialize(channel)
