@@ -4,12 +4,10 @@ require 'active_support/core_ext/module'
 
 module MultipleMan
   class Connection
-    def self.mutex
-      @mutex ||= Mutex.new
-    end
+    @mutex = Mutex.new
 
     def self.connection
-      mutex.synchronize do 
+      @mutex.synchronize do 
         @connection ||= begin
           connection = Bunny.new(MultipleMan.configuration.connection)
           MultipleMan.logger.debug "Connecting to #{MultipleMan.configuration.connection}"
