@@ -7,6 +7,7 @@ module MultipleMan
       self.enabled = true
       self.channel_pool_size = 5
       self.worker_concurrency = 1
+      self.reraise_errors = true
     end
 
     def logger
@@ -18,7 +19,7 @@ module MultipleMan
     end
 
     attr_accessor :topic_name, :app_name, :connection, :enabled, :channel_pool_size, :error_handler, 
-                  :worker_concurrency
+                  :worker_concurrency, :reraise_errors
     attr_writer :logger
   end
 

@@ -10,6 +10,7 @@ module MultipleMan
   require 'multiple_man/subscribers/registry'
   require 'multiple_man/configuration'
   require 'multiple_man/model_publisher'
+  require 'multiple_man/async_model_publisher'
   require 'multiple_man/attribute_extractor'
   require 'multiple_man/connection'
   require 'multiple_man/routing_key'
@@ -34,6 +35,7 @@ module MultipleMan
   def self.error(ex)
     if configuration.error_handler
       configuration.error_handler.call(ex)
+      raise ex if configuration.reraise_errors
     else
       raise ex
     end
