@@ -18,10 +18,16 @@ module MultipleMan
     end
 
     def self.connect
+      reconnect unless connection.open?
+
       channel = connection.create_channel
       yield new(channel) if block_given?
     ensure
       channel.close if channel
+    end
+
+    def self.reconnect
+      connection.start
     end
 
     attr_reader :topic
