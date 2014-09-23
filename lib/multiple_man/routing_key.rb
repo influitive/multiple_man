@@ -19,7 +19,7 @@ module MultipleMan
     attr_accessor :klass
 
     def operation=(value)
-      raise "Operation #{value} is not recognized" unless ALLOWED_OPERATIONS.include?(value)
+      raise "Operation #{value} is not recognized" unless ALLOWED_OPERATIONS.include?(value.to_sym)
       @operation = value
     end
 
