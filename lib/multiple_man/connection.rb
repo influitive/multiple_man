@@ -24,8 +24,8 @@ module MultipleMan
     end
 
     def close!
-      channel.close if channel
-      connection.close if connection
+      channel.close
+      connection.close
     end
 
     delegate :queue, to: :channel
