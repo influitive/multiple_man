@@ -24,7 +24,7 @@ module MultipleMan
       channel = connection.create_channel
       yield new(channel) if block_given?
     ensure
-      channel.close if channel
+      channel.close if channel && channel.open?
     end
 
     attr_reader :topic
