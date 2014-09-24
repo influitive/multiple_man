@@ -22,7 +22,7 @@ module MultipleMan
       end
 
       def publish(options = {})
-        self.multiple_man_publisher = ModelPublisher.build(options)
+        self.multiple_man_publisher = ModelPublisher.new(options)
       end
     end
   end

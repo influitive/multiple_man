@@ -3,14 +3,6 @@ require 'active_support/core_ext'
 module MultipleMan
   class ModelPublisher
 
-    def self.build(options = {})
-      if options[:async] == true
-        AsyncModelPublisher.new(options)
-      else
-        new(options)
-      end
-    end
-
     def initialize(options = {})
       self.options = options.with_indifferent_access
     end
