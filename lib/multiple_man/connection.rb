@@ -21,7 +21,11 @@ module MultipleMan
     end
 
     def self.connect
-      channel = connection.create_channel
+      channel = nil
+      connection = self.connection
+      @mutex.synchronize do
+        channel = connection.create_channel
+      end
       yield new(channel) if block_given?
     ensure
       channel.close if channel && channel.open?

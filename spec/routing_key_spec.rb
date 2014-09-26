@@ -40,7 +40,7 @@ describe MultipleMan::RoutingKey do
   end
 
   describe "operation=" do
-    [:create, :update, :destroy, :"#"].each do |op|
+    [:create, :update, :destroy, :"#", "create"].each do |op|
       it "should allow #{op}" do
         rk = described_class.new(Object)
         rk.operation = op
@@ -48,7 +48,7 @@ describe MultipleMan::RoutingKey do
       end
     end
 
-    ["new", nil, "", "create"].each do |op|
+    ["new", nil, ""].each do |op|
       it "should not allow #{op}" do
         rk = described_class.new(Object)
         expect { rk.operation = op }.to raise_error

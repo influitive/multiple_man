@@ -3,7 +3,7 @@ require 'spec_helper'
 describe MultipleMan::Connection do
 
   let(:mock_bunny) { double(Bunny) }
-  let(:mock_channel) { double(Bunny::Channel, close: nil) }
+  let(:mock_channel) { double(Bunny::Channel, close: nil, open?: true, topic: nil) }
 
   describe "connect" do
     it "should open a connection and a channel" do
