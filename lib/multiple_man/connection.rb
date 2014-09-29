@@ -18,8 +18,8 @@ module MultipleMan
 
     attr_reader :topic
 
-    def initialize
-      self.channel = self.class.connection.create_channel
+    def initialize(channel)
+      self.channel = channel
       self.topic = channel.topic(topic_name)
     end
 
