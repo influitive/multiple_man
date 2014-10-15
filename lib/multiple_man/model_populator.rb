@@ -23,8 +23,8 @@ module MultipleMan
     end
 
     def populate_field(field, value)
-      return if field == 'id'
-      
+      field = 'source_id' if field == 'id'
+
       setter = "#{field}="
       if record.respond_to?(setter)
         record.send(setter, value)
