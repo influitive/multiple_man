@@ -30,7 +30,16 @@ module MultipleMan::Subscribers
     end
 
     def find_conditions(id)
-      id.kind_of?(Hash) ? id : {multiple_man_identifier: id}
+      id.kind_of?(Hash) ? cleanse_id(id) : {multiple_man_identifier: id}
+    end
+
+    def cleanse_id(hash)
+      if hash.keys.length > 1 && hash.keys.include?(:id)
+        id = hash.delete(:id)
+        hash.merge(source_id: id)
+      else
+        hash
+      end
     end
 
     attr_writer :klass
