@@ -34,9 +34,9 @@ module MultipleMan::Subscribers
     end
 
     def cleanse_id(hash)
-      if hash.keys.length > 1 && hash.keys.include?(:id)
-        id = hash.delete(:id)
-        hash.merge(source_id: id)
+      if hash.keys.length > 1 && hash.keys.include?("id")
+        id = hash.delete("id")
+        hash.merge("source_id" => id)
       else
         hash
       end
