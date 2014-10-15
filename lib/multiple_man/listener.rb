@@ -23,7 +23,7 @@ module MultipleMan
     end
 
     def init_connection
-      channel = MultipleMan::Connection.connection.create_channel(nil, MultipleMan.configuration.worker_concurrency)
+      channel = Bunny.new(MultipleMan.configuration.connection).create_channel(nil, MultipleMan.configuration.worker_concurrency)
       channel.prefetch(100)
       self.connection = MultipleMan::Connection.new(channel)
     end
