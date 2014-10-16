@@ -57,7 +57,7 @@ module MultipleMan
       MultipleMan.error(ex)
 
       # Requeue the message
-      queue.channel.nack(delivery_info.delivery_tag, false, true)
+      queue.channel.nack(delivery_info.delivery_tag)
     end
 
     def operation(delivery_info)
