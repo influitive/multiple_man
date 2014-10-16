@@ -32,7 +32,7 @@ module MultipleMan
 
     def all_records(records, &block)
       if records.respond_to?(:find_each)
-        records.find_each(&block)
+        records.find_each(batch_size: 100, &block)
       elsif records.respond_to?(:each)
         records.each(&block)
       else
