@@ -8,7 +8,7 @@ module MultipleMan
     end
 
     def to_s
-      if operation == :seed
+      if operation.to_sym == :seed
         "#{topic_name}.#{operation}.#{klass}"
       else
         "#{topic_name}.#{klass}.#{operation}"
