@@ -31,10 +31,10 @@ module MultipleMan
     configuration.enabled = true
   end
 
-  def self.error(ex)
+  def self.error(ex, options = {})
     if configuration.error_handler
       configuration.error_handler.call(ex)
-      raise ex if configuration.reraise_errors
+      raise ex if configuration.reraise_errors && options[:reraise] != false
     else
       raise ex
     end

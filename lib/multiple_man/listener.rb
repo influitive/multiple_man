@@ -54,7 +54,7 @@ module MultipleMan
 
     def handle_error(ex, delivery_info)
       MultipleMan.logger.error "   Error - #{ex.message}\n\n#{ex.backtrace}"
-      MultipleMan.error(ex)
+      MultipleMan.error(ex, reraise: false)
 
       # Requeue the message
       queue.channel.nack(delivery_info.delivery_tag)
