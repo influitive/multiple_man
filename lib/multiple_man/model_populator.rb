@@ -23,7 +23,8 @@ module MultipleMan
     end
 
     def populate_field(field, value)
-      field = 'source_id' if field == 'id'
+      # Attempt to populate source id if id is specified
+      populate_field('source_id', value) if field == 'id'
 
       setter = "#{field}="
       if record.respond_to?(setter)
