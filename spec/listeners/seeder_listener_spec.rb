@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MultipleMan::SeederListener do
+describe MultipleMan::Listeners::SeederListener do
   class MockClass1; end
 
   before { MultipleMan::Connection.stub(:connection).and_return(double(Bunny).as_null_object)}

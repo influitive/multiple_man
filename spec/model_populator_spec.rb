@@ -27,6 +27,23 @@ describe MultipleMan::ModelPopulator do
         end
       end
     end
+    context "record has source id" do
+      let(:model) { Class.new do
+        attr_accessor :source_id, :id
+      end.new }
+      let(:data) { { id: 1 }}
+
+      its(:source_id) { should == 1 }
+      its(:id) { should be_nil }
+    end
+    context "record does not have source id" do
+      let(:model) { Class.new do
+        attr_accessor :id
+      end.new }
+      let(:data) { { id: 1 }}
+
+      its(:id) { should == 1 }
+    end
     context "without fields defined" do
       let(:fields) { nil }
 

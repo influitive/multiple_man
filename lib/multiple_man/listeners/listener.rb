@@ -1,15 +1,15 @@
 require 'json'
 require 'active_support/core_ext/hash'
 
-module MultipleMan
+module MultipleMan::Listeners
   class Listener
 
     class << self
       def start
         MultipleMan.logger.debug "Starting listeners."
-        MultipleMan.logger.debug Subscribers::Registry.subscriptions.to_json
+        MultipleMan.logger.debug MultipleMan::Subscribers::Registry.subscriptions.to_json
 
-        Subscribers::Registry.subscriptions.each do |subscription|
+        MultipleMan::Subscribers::Registry.subscriptions.each do |subscription|
           new(subscription).listen
         end
       end
