@@ -22,7 +22,7 @@ module MultipleMan
     attr_accessor :options
 
     def push_record(connection, record, operation)
-      data = record_data(record)
+      data = record_data(record, operation)
       routing_key = RoutingKey.new(record_type(record), operation).to_s
       MultipleMan.logger.debug("  Record Data: #{data} | Routing Key: #{routing_key}")
       connection.topic.publish(data, routing_key: routing_key)
@@ -45,8 +45,10 @@ module MultipleMan
       options[:as] || record.class.name
     end
 
-    def record_data(record)
+    def record_data(record, operation)
       {
+        type: record_type(record),
+        operation: operation,
         id: Identity.build(record, options).value,
         data: serializer(record).as_json
       }.to_json
