@@ -8,10 +8,10 @@ describe MultipleMan::PayloadGenerator do
 
   describe "operation" do
     it "should be whatever was passed in" do
-      expect(described_class.new(record: mock_object, operation: :update).operation).to eq('update')
+      expect(described_class.new(mock_object, :update).operation).to eq('update')
     end
     it "should be create by default" do
-      expect(described_class.new(record: mock_object).operation).to eq('create')
+      expect(described_class.new(mock_object).operation).to eq('create')
     end
   end
 
@@ -24,13 +24,13 @@ describe MultipleMan::PayloadGenerator do
           end
         end
 
-        described_class.new(record: mock_object, options: {with: serializer}).data.should == {a: 1, b: 2}
+        described_class.new(mock_object, :create, {with: serializer}).data.should == {a: 1, b: 2}
       end
     end
     context "without a serializer" do
       it "should call the attribute extractor" do
         MultipleMan::AttributeExtractor.any_instance.stub(:as_json).and_return({c: 3, d: 4})
-        described_class.new(record: mock_object, options: { fields: [:c, :d] }).data.should == {c: 3, d: 4}
+        described_class.new(mock_object, :create, { fields: [:c, :d] }).data.should == {c: 3, d: 4}
       end
     end
   end
@@ -38,16 +38,16 @@ describe MultipleMan::PayloadGenerator do
   describe "id" do
     it "should defer to identity" do
       MultipleMan::Identity::MultipleField.any_instance.stub(:value).and_return("foo_1")
-      described_class.new(record: mock_object).id.should == "foo_1"
+      described_class.new(mock_object).id.should == "foo_1"
     end
   end
 
   describe "record_type" do
     it "should use the as option if available" do
-      expect(described_class.new(record: mock_object).type).to eq("PayloadMockClass")
+      expect(described_class.new(mock_object).type).to eq("PayloadMockClass")
     end
     it "should use the class otherwise" do
-      expect(described_class.new(record: mock_object, options: { as: 'FooClass'}).type).to eq("FooClass")
+      expect(described_class.new(mock_object, :create, { as: 'FooClass'}).type).to eq("FooClass")
     end
   end
 end

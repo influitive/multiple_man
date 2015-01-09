@@ -1,6 +1,6 @@
 module MultipleMan
   class PayloadGenerator
-    def initialize(record:, operation: :create, options: {})
+    def initialize(record, operation = :create, options = {})
       self.record = record
       self.operation = operation.to_s
       self.options = options

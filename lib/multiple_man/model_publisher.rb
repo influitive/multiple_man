@@ -22,7 +22,7 @@ module MultipleMan
     attr_accessor :options
 
     def push_record(connection, record, operation)
-      data = PayloadGenerator.new(record: record, operation: operation, options: options)
+      data = PayloadGenerator.new(record, operation, options)
       routing_key = RoutingKey.new(data.type, operation).to_s
       
       MultipleMan.logger.debug("  Record Data: #{data} | Routing Key: #{routing_key}")
