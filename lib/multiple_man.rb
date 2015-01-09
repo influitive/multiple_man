@@ -11,6 +11,7 @@ module MultipleMan
   require 'multiple_man/configuration'
   require 'multiple_man/model_publisher'
   require 'multiple_man/attribute_extractor'
+  require 'multiple_man/payload_generator'
   require 'multiple_man/connection'
   require 'multiple_man/routing_key'
   require 'multiple_man/listeners/listener'

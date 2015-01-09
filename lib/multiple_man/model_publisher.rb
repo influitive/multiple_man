@@ -22,10 +22,12 @@ module MultipleMan
     attr_accessor :options
 
     def push_record(connection, record, operation)
-      data = record_data(record, operation)
-      routing_key = RoutingKey.new(record_type(record), operation).to_s
+      data = PayloadGenerator.new(record: record, operation: operation, options: options)
+      routing_key = RoutingKey.new(data.type, operation).to_s
+      
       MultipleMan.logger.debug("  Record Data: #{data} | Routing Key: #{routing_key}")
-      connection.topic.publish(data, routing_key: routing_key)
+      
+      connection.topic.publish(data.payload, routing_key: routing_key)
     rescue Exception => ex
       MultipleMan.error(ex)
     end
@@ -38,38 +40,6 @@ module MultipleMan
       else
         yield records
       end
-    end
-
-
-    def record_type(record)
-      options[:as] || record.class.name
-    end
-
-    def record_data(record, operation)
-      {
-        type: record_type(record),
-        operation: operation,
-        id: Identity.build(record, options).value,
-        data: serializer(record).as_json
-      }.to_json
-    end
-
-    # Todo - can we unify the constructor for serializers
-    # and attribute extractors and simplify this?
-    def serializer(record)
-      if options[:with]
-        options[:with].new(record)
-      else
-        AttributeExtractor.new(record, fields)
-      end
-    end
-
-    def fields
-      options[:fields]
-    end
-
-    def identifier
-      options[:identifier]
     end
 
   end

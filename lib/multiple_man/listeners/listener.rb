@@ -43,7 +43,8 @@ module MultipleMan::Listeners
     def process_message(delivery_info, payload)
       MultipleMan.logger.info "Processing message for #{delivery_info.routing_key}."
       begin
-        subscription.send(operation(delivery_info), JSON.parse(payload).with_indifferent_access)
+        payload = JSON.parse(payload).with_indifferent_access
+        subscription.send(operation(delivery_info, payload), payload)
       rescue Exception => ex
         handle_error(ex, delivery_info)
       else
@@ -60,8 +61,8 @@ module MultipleMan::Listeners
       queue.channel.nack(delivery_info.delivery_tag)
     end
 
-    def operation(delivery_info)
-      delivery_info.routing_key.split(".").last
+    def operation(delivery_info, payload)
+      payload['operation'] || delivery_info.routing_key.split(".").last
     end
 
     def queue

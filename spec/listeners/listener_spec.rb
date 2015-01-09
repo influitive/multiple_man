@@ -49,6 +49,17 @@ describe MultipleMan::Listeners::Listener do
     listener.process_message(OpenStruct.new(routing_key: "app.MockClass1.create"), '{"a":1,"b":2}')
   end
 
+  specify "process_message should use the payload to determine the operation if it's available" do
+    connection_stub = double(MultipleMan::Connection).as_null_object
+    MultipleMan::Connection.stub(:new).and_return(connection_stub)
+    subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#").as_null_object
+    listener = described_class.new(subscriber)
+
+    connection_stub.should_receive(:acknowledge)
+    subscriber.should_receive(:create)
+    listener.process_message(OpenStruct.new(routing_key: "some random routing key"), '{"operation":"create","data":{"a":1,"b":2}}')
+  end
+
   it "should nack on failure" do
     connection_stub = double(MultipleMan::Connection).as_null_object
     MultipleMan::Connection.stub(:new).and_return(connection_stub)
