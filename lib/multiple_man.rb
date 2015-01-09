@@ -1,4 +1,5 @@
 require "multiple_man/version"
+require 'active_support'
 
 module MultipleMan
   require 'multiple_man/railtie' if defined?(Rails)
