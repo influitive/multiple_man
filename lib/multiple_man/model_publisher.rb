@@ -24,9 +24,9 @@ module MultipleMan
     def push_record(connection, record, operation)
       data = PayloadGenerator.new(record, operation, options)
       routing_key = RoutingKey.new(data.type, operation).to_s
-      
+
       MultipleMan.logger.debug("  Record Data: #{data} | Routing Key: #{routing_key}")
-      
+
       connection.topic.publish(data.payload, routing_key: routing_key)
     rescue Exception => ex
       MultipleMan.error(ex)
