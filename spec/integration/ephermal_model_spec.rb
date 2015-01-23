@@ -8,11 +8,11 @@ describe "Publishing of ephermal models" do
       end
 
       attr_accessor :foo, :bar, :baz, :id
-      def initialize(id:nil, foo:nil, bar:nil, baz:nil)
-        self.id = id
-        self.foo = foo
-        self.bar = bar
-        self.baz = baz
+      def initialize(params)
+        self.id = params[:id]
+        self.foo = params[:foo]
+        self.bar = params[:bar]
+        self.baz = params[:baz]
       end
 
       include MultipleMan::Publisher
