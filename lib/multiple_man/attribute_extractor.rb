@@ -5,7 +5,7 @@ module MultipleMan
 
     def initialize(record, fields, include_previous = false)
       raise "Fields must be specified" unless fields
-      
+
       self.include_previous = include_previous
       self.record = record
       self.fields = fields
@@ -13,7 +13,7 @@ module MultipleMan
 
     def as_json
       if include_previous
-        data.merge(previous_data)
+        data.merge({previous: data("_was")})
       else
         data
       end
@@ -21,20 +21,16 @@ module MultipleMan
 
   private
 
-    def data
+    def data(suffix = nil)
       Hash[fields.map do |field|
-        [field, record.send(field)] 
-      end]
+        get_field(field, suffix)
+      end.reject(&:nil?)]
     end
 
-    def previous_data
-      { previous: Hash[fields.map do |field|
-          previous_data_method = "#{field}_was"
-          [field, record.send(previous_data_method)] if record.respond_to? previous_data_method
-        end.reject(&:nil?)]
-      }
+    def get_field(field, suffix)
+      method = "#{field}#{suffix}"
+      [field, record.send(method)] if record.respond_to? method
     end
-
 
     attr_accessor :record, :fields, :identifier, :include_previous
 
