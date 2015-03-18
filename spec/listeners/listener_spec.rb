@@ -1,6 +1,6 @@
-require 'spec_helper' 
+require 'spec_helper'
 
-describe MultipleMan::Listeners::Listener do 
+describe MultipleMan::Listeners::Listener do
   class MockClass1; end
   class MockClass2; end
 

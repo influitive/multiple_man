@@ -7,8 +7,7 @@ describe MultipleMan::Connection do
 
   describe "connect" do
     it "should open a connection and a channel" do
-      mock_bunny.should_receive(:start)
-      Bunny.should_receive(:new).and_return(mock_bunny)
+      MultipleMan::Connection.should_receive(:connection).and_return(mock_bunny)
       mock_bunny.should_receive(:create_channel).once.and_return(mock_channel)
 
       described_class.connect { }
