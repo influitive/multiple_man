@@ -2,7 +2,8 @@ module MultipleMan::Subscribers
   class ModelSubscriber < Base
 
     def initialize(klass, options)
-      super(klass)
+      self.model_class = klass
+      super(options[:to] || klass.name)
       self.options = options
     end
 
@@ -26,7 +27,7 @@ module MultipleMan::Subscribers
   private
 
     def find_model(id)
-      klass.where(find_conditions(id)).first || klass.new
+      model_class.where(find_conditions(id)).first || model_class.new
     end
 
     def find_conditions(id)
@@ -43,6 +44,7 @@ module MultipleMan::Subscribers
     end
 
     attr_writer :klass
+    attr_accessor :model_class
 
   end
 end

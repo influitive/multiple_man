@@ -8,7 +8,7 @@ MultipleMan synchronizes your ActiveRecord models between Rails
 apps, using RabbitMQ to send messages between your applications.
 It's heavily inspired by Promiscuous, but differs in a few ways:
 
-- MultipleMan makes a hard assumption that you're using 
+- MultipleMan makes a hard assumption that you're using
   ActiveRecord for your models. This simplifies how models
   are sychronized, which offers a few benefits like:
 - Transactions are fully supported in MultipleMan. Records
@@ -38,9 +38,9 @@ calling MultipleMan.configure like so:
 
     MultipleMan.configure do |config|
       # A connection string to your local server. Defaults to localhost.
-      config.connection = "amqp://example.com" 
+      config.connection = "amqp://example.com"
 
-      # The topic name to push to. If you have multiple 
+      # The topic name to push to. If you have multiple
       # multiple man apps, this should be unique per application. Publishers
       # and subscribers should always use the same topic.
       config.topic_name = "multiple_man"
@@ -50,10 +50,10 @@ calling MultipleMan.configure like so:
       config.app_name = "MyApp"
 
       # Specify what should happen when MultipleMan
-      # encounters an exception. 
+      # encounters an exception.
       config.on_error do |exception|
         ErrorLogger.log(exception)
-      end 
+      end
 
       # Where you want to log errors to. Should be an instance of Logger
       # Defaults to the Rails logger (for Rails) or STDOUT otherwise.
@@ -95,16 +95,16 @@ You can use the following options when publishing:
   an ActiveRecord serializer (or anything that takes your
   record in the constructor and has an `as_json` method) to
   serialize models instead.
-- `as` - If you want the name of the model from the 
+- `as` - If you want the name of the model from the
   perspective of MultipleMan to be different than the model
-  name in Rails, specify `as` with the name you want to use. 
+  name in Rails, specify `as` with the name you want to use.
   Useful for STI.
 - `identify_by` - Specify an array of fields that MultipleMan
   should use to identify your record on the subscriber end.
-  `id` is used by default and is generally fine, unless you're working in a multi-tenant environment where ids may 
+  `id` is used by default and is generally fine, unless you're working in a multi-tenant environment where ids may
   be shared between two different models of the same class.
 - (DEPRECATED) `identifier` - Either a symbol or a proc used by MultipleMan to identify your model.
-  
+
 ### Publishing
 
 By default, MultipleMan will publish all of your models whenever you save a model (in an `after_commit` hook). If you need to manually publish models, you can do so with the `multiple_man_publish` method, which acts like a scope on your models, like so:
@@ -120,7 +120,7 @@ Widget.where(published: true).multiple_man_publish
 Widget.first.multiple_man_publish
 ```
 
-If you're publishing multiple models, it's best to use the 
+If you're publishing multiple models, it's best to use the
 version of multiple_man_publish that operates on a collection. By calling the individual version, a channel is opened and closed for each model, which can impact the thoroughput of MultipleMan.
 
 ### Subscribing to models
@@ -143,6 +143,22 @@ By default, MultipleMan will attempt to identify which model on the subscriber m
 
 If your publisher specifies an `identifier` option, you *must* include a column on the subscriber side called `multiple_man_identifier`. MultipleMan will attempt to locate models on the subscriber side by this column.
 
+## Listening for model changes
+
+If you want to do something other than populate a model on MultipleMan messages,
+you can listen for messages and process them however you'd like:
+
+```
+def ListenerClass
+  include MultipleMan::Listener
+  listen_to 'ModelName'
+
+  def create(payload)
+    # do something when a model is created
+  end
+end
+``
+
 ## Listening for subscriptions
 
 Once you've set up your subscribers, you'll need to run a background worker to manage
@@ -152,9 +168,9 @@ the subscription process. Just run the following:
 
 ## Seeding
 
-One common problem when using MultipleMan on an existing project is that there's already a lot of data that you want to process using your listeners. MultipleMan provides a mechanism called "seeding" to accomplish this. 
+One common problem when using MultipleMan on an existing project is that there's already a lot of data that you want to process using your listeners. MultipleMan provides a mechanism called "seeding" to accomplish this.
 
-1. On the subscriber side, start listening for seed requests with the following rake task: 
+1. On the subscriber side, start listening for seed requests with the following rake task:
 
 ```
 rake multiple_man:seed
@@ -166,7 +182,7 @@ rake multiple_man:seed
 MyModel.multiple_man_publish(:seed)
 ```
 
-3. Stop the seeder rake task when all of your messages have been processed. You can check your RabbitMQ server 
+3. Stop the seeder rake task when all of your messages have been processed. You can check your RabbitMQ server
 
 ## Contributing
 
@@ -202,4 +218,3 @@ THE SOFTWARE.
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/influitive/multiple_man/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-

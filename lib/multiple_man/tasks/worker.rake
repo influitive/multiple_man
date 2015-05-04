@@ -14,8 +14,9 @@ namespace :multiple_man do
 
     listener.start
 
-    while(true)
-      sleep 10
-    end
+    Signal.trap("INT") { puts "received INT"; exit }
+    Signal.trap("QUIT") { puts "received QUIT"; exit }
+
+    sleep
   end
 end

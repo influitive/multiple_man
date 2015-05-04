@@ -6,6 +6,7 @@ module MultipleMan
 
   require 'multiple_man/mixins/publisher'
   require 'multiple_man/mixins/subscriber'
+  require 'multiple_man/mixins/listener'
   require 'multiple_man/subscribers/base'
   require 'multiple_man/subscribers/model_subscriber'
   require 'multiple_man/subscribers/registry'

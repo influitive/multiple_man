@@ -5,6 +5,13 @@ describe MultipleMan::Subscribers::ModelSubscriber do
 
   end
 
+  describe "initialize" do
+    it "should listen to the object passed in for to" do
+      subscriber = described_class.new(MockClass, to: 'PublishedClass')
+      expect(subscriber.klass).to eq("PublishedClass")
+    end
+  end
+
   describe "create" do
     it "should create a new model" do
       mock_object = MockClass.new

@@ -11,8 +11,12 @@ module MultipleMan
       return unless MultipleMan.configuration.enabled
 
       Connection.connect do |connection|
-        all_records(records) do |record|
-          push_record(connection, record, operation)
+        ActiveSupport::Notifications.instrument('multiple_man.publish_messages') do
+          all_records(records) do |record|
+            ActiveSupport::Notifications.instrument('multiple_man.publish_message') do
+              push_record(connection, record, operation)
+            end
+          end
         end
       end
     end
