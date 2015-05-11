@@ -1,3 +1,3 @@
 module MultipleMan
-  VERSION = "0.5.21"
+  VERSION = "0.6.0"
 end
