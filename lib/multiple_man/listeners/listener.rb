@@ -7,7 +7,6 @@ module MultipleMan::Listeners
     class << self
       def start
         MultipleMan.logger.debug "Starting listeners."
-        MultipleMan.logger.debug MultipleMan::Subscribers::Registry.subscriptions.to_json
 
         MultipleMan::Subscribers::Registry.subscriptions.each do |subscription|
           new(subscription).listen
@@ -33,7 +32,7 @@ module MultipleMan::Listeners
     attr_accessor :subscription, :connection
 
     def listen
-      
+
       MultipleMan.logger.info "Listening for #{subscription.klass} with routing key #{routing_key}."
       queue.bind(connection.topic, routing_key: routing_key).subscribe(ack: true) do |delivery_info, meta_data, payload|
         process_message(delivery_info, payload)

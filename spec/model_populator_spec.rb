@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MultipleMan::ModelPopulator do 
+describe MultipleMan::ModelPopulator do
   class MockModel
     attr_accessor :a, :b, :multiple_man_identifier
   end
@@ -26,6 +26,13 @@ describe MultipleMan::ModelPopulator do
           expect { subject }.to raise_error
         end
       end
+    end
+
+    context "with fields as a hash" do
+      let(:fields) { { b: :a } }
+
+      its(:b) { should == nil }
+      its(:a) { should == 2 }
     end
     context "record has source id" do
       let(:model) { Class.new do

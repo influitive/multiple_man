@@ -8,7 +8,7 @@ module MultipleMan
     def self.connect
       channel = connection.create_channel
       yield new(channel) if block_given?
-    rescue Bunny::ConnectionClosedError, Bunny::NetworkErrorWrapper
+    rescue Bunny::Exception
       reset!
       retry
     ensure

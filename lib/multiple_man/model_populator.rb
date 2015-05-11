@@ -9,12 +9,13 @@ module MultipleMan
     def populate(payload)
       data = payload[:id].merge(payload[:data])
       fields_for(data).each do |field|
-        populate_field(field, data[field])
+        source, dest = field.is_a?(Array) ? field : [field, field]
+        populate_field(dest, data[source])
       end
       record
     end
 
-  private 
+  private
     attr_accessor :record, :fields
 
     # Raise an exception if explicit fields were provided.
@@ -23,7 +24,7 @@ module MultipleMan
     end
 
     def populate_field(field, value)
-      # Attempt to populate source id if id is specified
+      # Attempts to populate source id if id is specified
       if field.to_s == 'id' && record.respond_to?('source_id')
         field = 'source_id'
       end

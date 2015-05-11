@@ -19,6 +19,8 @@ module MultipleMan
           end
         end
       end
+    rescue Exception => ex
+      MultipleMan.error(ex)
     end
 
   private
@@ -32,8 +34,6 @@ module MultipleMan
       MultipleMan.logger.debug("  Record Data: #{data} | Routing Key: #{routing_key}")
 
       connection.topic.publish(data.payload, routing_key: routing_key)
-    rescue Exception => ex
-      MultipleMan.error(ex)
     end
 
     def all_records(records, &block)
