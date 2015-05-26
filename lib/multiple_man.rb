@@ -22,6 +22,9 @@ module MultipleMan
   require 'multiple_man/identity'
   require 'multiple_man/publish'
 
+  require 'multiple_man/channel_maintenance/gc'
+  require 'multiple_man/channel_maintenance/reaper'
+
   def self.logger
     configuration.logger
   end

@@ -5,9 +5,13 @@ module MultipleMan
       self.topic_name = "multiple_man"
       self.app_name = Rails.application.class.parent.to_s if defined?(Rails)
       self.enabled = true
-      self.channel_pool_size = 5
       self.worker_concurrency = 1
       self.reraise_errors = true
+      self.connection_recovery = {
+        time_before_reconnect: 0.2,
+        time_between_retries: 0.8,
+        max_retries: 5
+      }
     end
 
     def logger
@@ -18,8 +22,8 @@ module MultipleMan
       @error_handler = block
     end
 
-    attr_accessor :topic_name, :app_name, :connection, :enabled, :channel_pool_size, :error_handler, 
-                  :worker_concurrency, :reraise_errors
+    attr_accessor :topic_name, :app_name, :connection, :enabled, :error_handler,
+                  :worker_concurrency, :reraise_errors, :connection_recovery
     attr_writer :logger
   end
 
