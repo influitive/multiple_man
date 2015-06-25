@@ -30,8 +30,6 @@ describe "Publishing of ephermal models" do
       data: { foo: 'foo', bar: 'bar', baz: 'baz'}
     }.to_json
 
-    #MultipleMan::Connection.unstub!(:connection)
-
     expect_any_instance_of(Bunny::Exchange).to receive(:publish)
                                            .with(payload, routing_key: 'multiple_man.Ephermal.create')
 
