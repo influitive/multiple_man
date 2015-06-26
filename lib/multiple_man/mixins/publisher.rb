@@ -7,7 +7,7 @@ module MultipleMan
       if base.respond_to?(:after_commit)
         base.after_commit(on: :create) { |r| r.multiple_man_publish(:create) }
         base.after_commit(on: :update) do |r|
-          if !r.respond_to(:previous_changes) || r.previous_changes.any?
+          if !r.respond_to?(:previous_changes) || r.previous_changes.any?
             r.multiple_man_publish(:update)
           end
         end
