@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MultipleMan::Publisher do 
+describe MultipleMan::Publisher do
   class MockClass
     class << self
       attr_accessor :subscriber
@@ -32,6 +32,6 @@ describe MultipleMan::Publisher do
       mock_publisher = double(MultipleMan::ModelPublisher)
       MultipleMan::ModelPublisher.any_instance.should_receive(:publish).with(my_mock, :create)
       my_mock.save
-    end 
+    end
   end
 end

@@ -6,7 +6,11 @@ module MultipleMan
       base.extend(ClassMethods)
       if base.respond_to?(:after_commit)
         base.after_commit(on: :create) { |r| r.multiple_man_publish(:create) }
-        base.after_commit(on: :update) { |r| r.multiple_man_publish(:update) if r.changed? }
+        base.after_commit(on: :update) do |r|
+          if !r.respond_to(:previous_changes) || r.previous_changes.any?
+            r.multiple_man_publish(:update)
+          end
+        end
         base.after_commit(on: :destroy) { |r| r.multiple_man_publish(:destroy) }
       end
 
