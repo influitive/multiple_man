@@ -157,7 +157,7 @@ def ListenerClass
     # do something when a model is created
   end
 end
-``
+```
 
 ## Listening for subscriptions
 
