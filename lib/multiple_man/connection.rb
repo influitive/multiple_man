@@ -23,9 +23,6 @@ module MultipleMan
         Thread.current[:multiple_man_exception_retry_count] = 0
         raise "MultipleMan::ConnectionError"
       end
-    rescue Exception => e
-      Infl::Errors::Logger.log(e)
-      raise
     end
 
     def self.channel
