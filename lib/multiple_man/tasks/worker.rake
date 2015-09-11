@@ -16,6 +16,7 @@ namespace :multiple_man do
 
     Signal.trap("INT") { puts "received INT"; exit }
     Signal.trap("QUIT") { puts "received QUIT"; exit }
+    Signal.trap("TERM") { puts "received TERM"; exit }
 
     sleep
   end
