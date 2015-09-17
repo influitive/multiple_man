@@ -4,7 +4,7 @@ module MultipleMan
       base.extend(ClassMethods)
     end
 
-    def routing_key
+    def routing_key(operation=self.operation)
       MultipleMan::RoutingKey.new(klass, operation).to_s
     end
 
@@ -20,10 +20,6 @@ module MultipleMan
     end
 
     def destroy(payload)
-      # noop
-    end
-
-    def seed(payload)
       # noop
     end
 
