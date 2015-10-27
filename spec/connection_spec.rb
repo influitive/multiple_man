@@ -3,19 +3,18 @@ require 'spec_helper'
 describe MultipleMan::Connection do
 
   let(:mock_bunny) { double(Bunny, open?: true, close: nil) }
-  let(:mock_channel) { double(Bunny::Channel, close: nil, open?: true, topic: nil) }
+  let(:mock_channel) { double(Bunny::Channel, close: nil, open?: true, topic: nil, number: 1) }
 
-  describe "connect" do
-    it "should open a connection and a channel" do
-      MultipleMan::Connection.should_receive(:connection).and_return(mock_bunny)
-      mock_bunny.should_receive(:create_channel).once.and_return(mock_channel)
-
-      described_class.connect { }
-    end
+  after do
+    Thread.current.thread_variable_set(:multiple_man_current_channel, nil)
+    MultipleMan::Connection.reset!
   end
 
-  subject { described_class.new(mock_channel) }
+  it "should open a connection and a channel" do
+    MultipleMan::Connection.should_receive(:connection).and_return(mock_bunny)
+    mock_bunny.should_receive(:create_channel).once.and_return(mock_channel)
+    expect(mock_channel).to receive(:topic).with(MultipleMan.configuration.topic_name)
 
-  its(:topic_name) { should == MultipleMan.configuration.topic_name }
-
+    described_class.connect { }
+  end
 end
