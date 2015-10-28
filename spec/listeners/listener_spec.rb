@@ -1,75 +1,90 @@
 require 'spec_helper'
 
 describe MultipleMan::Listeners::Listener do
-  class MockClass1; end
-  class MockClass2; end
+  let(:listener1) {
+    Class.new do
+      include MultipleMan::Listener
 
-  before { MultipleMan::Connection.stub(:connection).and_return(double(Bunny).as_null_object)}
-
-  describe "start" do
-    it "should listen to each subscription" do
-      MultipleMan.configuration.stub(:listeners).and_return([
-        double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1),
-        double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass2)
-      ])
-
-      mock_listener = double(described_class)
-      described_class.should_receive(:new).twice.and_return(mock_listener)
-
-      # Would actually be two seperate objects in reality, this is for
-      # ease of stubbing.
-      mock_listener.should_receive(:listen).twice
-
-      described_class.start
+      def initialize
+        self.listen_to = 'SomeClass'
+        self.operation = '#'
+      end
     end
-  end
+  }
 
-  describe "listen" do
-    let(:connection_stub) { double(MultipleMan::Connection, queue: queue_stub, topic: 'app') }
-    let(:queue_stub) { double(Bunny::Queue, bind: bind_stub) }
-    let(:bind_stub) { double(:bind, subscribe: nil)}
+  let(:listener2) {
+    Class.new do
+      include MultipleMan::Listener
 
-    before { MultipleMan::Connection.stub(:new).and_return(connection_stub) }
-
-    it "should listen to the right topic, and for all updates to a model" do
-      listener = described_class.new(double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#", queue_name: "MockClass1"))
-      queue_stub.should_receive(:bind).with('app', routing_key: "MockClass1.#")
-      listener.listen
+      def initialize
+        self.listen_to = 'SomeOtherClass'
+        self.operation = '#'
+      end
     end
+  }
+
+  it "listens to each subscription" do
+    subscriptions = [listener1.new, listener2.new]
+    queue = double(Bunny::Queue)
+
+    expect(queue).to receive(:bind).with('some-topic', routing_key: subscriptions.first.routing_key).ordered
+    expect(queue).to receive(:bind).with('some-topic', routing_key: subscriptions.last.routing_key).ordered
+    expect(queue).to receive(:subscribe).with(manual_ack: true).ordered
+
+    subject = described_class.new(subscribers: subscriptions, queue: queue, topic: 'some-topic')
+
+    subject.listen
   end
 
-  specify "process_message should send the correct data" do
-    connection_stub = double(MultipleMan::Connection).as_null_object
-    MultipleMan::Connection.stub(:new).and_return(connection_stub)
-    subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#").as_null_object
-    listener = described_class.new(subscriber)
+  it "sends the correct data" do
+    channel = double(Bunny::Channel)
+    queue = double(Bunny::Queue, channel: channel).as_null_object
 
-    connection_stub.should_receive(:acknowledge)
-    subscriber.should_receive(:create).with({"a" => 1, "b" => 2})
-    listener.process_message(OpenStruct.new(routing_key: "app.MockClass1.create"), '{"a":1,"b":2}')
+    subscriber = listener1.new
+    subject = described_class.new(subscribers:[subscriber], queue: queue, topic: 'some-topic')
+
+    expect(channel).to receive(:acknowledge)
+    expect(subscriber).to receive(:create).with({"a" => 1, "b" => 2})
+
+    delivery_info = OpenStruct.new(routing_key: "multiple_man.SomeClass.create")
+    payload = '{"a":1,"b":2}'
+    allow(queue).to receive(:subscribe).and_yield(delivery_info, double(:meta), payload)
+
+    subject.listen
   end
 
-  specify "process_message should use the payload to determine the operation if it's available" do
-    connection_stub = double(MultipleMan::Connection).as_null_object
-    MultipleMan::Connection.stub(:new).and_return(connection_stub)
-    subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#").as_null_object
-    listener = described_class.new(subscriber)
+  it "uses the payload to determine the operation if it's available" do
+    channel = double(Bunny::Channel).as_null_object
+    queue = double(Bunny::Queue, channel: channel).as_null_object
 
-    connection_stub.should_receive(:acknowledge)
+    subscriber = listener1.new
+    subject = described_class.new(subscribers:[subscriber], queue: queue, topic: 'some-topic')
+
+    delivery_info = OpenStruct.new(routing_key: "multiple_man.SomeClass.some_other_operation")
+    payload = '{"operation": "create", "a":1,"b":2}'
+    allow(queue).to receive(:subscribe).and_yield(delivery_info, double(:meta), payload)
+
     subscriber.should_receive(:create)
-    listener.process_message(OpenStruct.new(routing_key: "some random routing key"), '{"operation":"create","data":{"a":1,"b":2}}')
+
+    subject.listen
   end
 
-  it "should nack on failure" do
-    connection_stub = double(MultipleMan::Connection).as_null_object
-    MultipleMan::Connection.stub(:new).and_return(connection_stub)
-    subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#").as_null_object
-    listener = described_class.new(subscriber)
+  it "sends a nack on failure" do
+    allow(MultipleMan.configuration).to receive(:error_handler) { double(:handler).as_null_object}
 
-    connection_stub.should_receive(:nack)
-    MultipleMan.should_receive(:error)
-    subscriber.should_receive(:create).with({"a" => 1, "b" => 2}).and_raise("fail!")
+    channel = double(Bunny::Channel)
+    queue = double(Bunny::Queue, channel: channel).as_null_object
 
-    listener.process_message(OpenStruct.new(routing_key: "app.MockClass1.create"), '{"a":1,"b":2}')
+    delivery_info = OpenStruct.new(routing_key: "multiple_man.SomeClass.create")
+    payload = '{"a":1,"b":2}'
+    allow(queue).to receive(:subscribe).and_yield(delivery_info, double(:meta), payload)
+
+    subscriber = listener1.new
+    allow(subscriber).to receive(:create).and_raise('anything')
+
+    expect(channel).to receive(:nack)
+    subject = described_class.new(subscribers:[subscriber], queue: queue, topic: 'some-topic')
+    subject.listen
   end
+
 end

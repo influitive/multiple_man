@@ -1,22 +1,43 @@
 require 'spec_helper'
 
 describe MultipleMan::Listeners::SeederListener do
-  class MockClass1; end
+  let(:listener1) {
+    Class.new do
+      include MultipleMan::Listener
 
-  before { MultipleMan::Connection.stub(:connection).and_return(double(Bunny).as_null_object)}
-  let(:connection_stub) { double(MultipleMan::Connection, queue: queue_stub, topic: 'app') }
-  let(:queue_stub) { double(Bunny::Queue, bind: bind_stub) }
-  let(:bind_stub) { double(:bind, subscribe: nil)}
+      def initialize
+        self.listen_to = 'SomeClass'
+        self.operation = '#'
+      end
+    end
+  }
 
-  before { MultipleMan::Connection.stub(:new).and_return(connection_stub) }
+  it 'binds for seeding' do
+    channel = double(Bunny::Channel).as_null_object
+    queue = double(Bunny::Queue, channel: channel)
 
-  it 'listens to seed events' do
-    listener = described_class.new(double(MultipleMan::Subscribers::ModelSubscriber,
-                                   klass: MockClass1,
-                                   routing_key: "seed.MockClass1",
-                                   queue_name: "MockClass1"))
+    expect(queue).to receive(:bind).with('some-topic', routing_key: "multiple_man.seed.SomeClass")
+    expect(queue).to receive(:subscribe).with(manual_ack: true)
 
-    queue_stub.should_receive(:bind).with('app', routing_key: "seed.MockClass1")
-    listener.listen
+    subject = described_class.new(subscribers: [listener1.new], queue: queue, topic: 'some-topic')
+    subject.listen
   end
+
+  it "sends the correct data" do
+    channel = double(Bunny::Channel)
+    queue = double(Bunny::Queue, channel: channel).as_null_object
+
+    subscriber = listener1.new
+    subject = described_class.new(subscribers:[subscriber], queue: queue, topic: 'some-topic')
+
+    expect(channel).to receive(:acknowledge)
+    expect(subscriber).to receive(:create).with({"a" => 1, "b" => 2})
+
+    delivery_info = OpenStruct.new(routing_key: "multiple_man.seed.SomeClass")
+    payload = '{"a":1,"b":2}'
+    allow(queue).to receive(:subscribe).and_yield(delivery_info, double(:meta), payload)
+
+    subject.listen
+  end
+
 end

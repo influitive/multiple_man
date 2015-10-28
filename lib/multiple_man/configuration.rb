@@ -10,7 +10,8 @@ module MultipleMan
   class Configuration
     attr_reader :subscriber_registry
     attr_accessor :topic_name, :app_name, :connection, :enabled, :error_handler,
-                  :worker_concurrency, :reraise_errors, :connection_recovery
+                  :worker_concurrency, :reraise_errors, :connection_recovery,
+                  :queue_name
 
     attr_writer :logger
 
@@ -27,6 +28,7 @@ module MultipleMan
       }
 
       @subscriber_registry = Subscribers::Registry.new
+      self.queue_name = "#{topic_name}.#{app_name}"
     end
 
     def logger

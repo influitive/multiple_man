@@ -8,9 +8,6 @@ module MultipleMan
       MultipleMan::RoutingKey.new(listen_to, operation).to_s
     end
 
-    def klass
-      self.class.name
-    end
     attr_accessor :operation
     attr_accessor :listen_to
 
@@ -24,10 +21,6 @@ module MultipleMan
 
     def destroy(payload)
       # noop
-    end
-
-    def queue_name
-      "#{MultipleMan.configuration.topic_name}.#{MultipleMan.configuration.app_name}.#{klass}"
     end
 
     module ClassMethods
