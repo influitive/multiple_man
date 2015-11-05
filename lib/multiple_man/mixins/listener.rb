@@ -5,11 +5,14 @@ module MultipleMan
     end
 
     def routing_key(operation=self.operation)
-      MultipleMan::RoutingKey.new(klass, operation).to_s
+      MultipleMan::RoutingKey.new(listen_to, operation).to_s
     end
 
-    attr_accessor :klass
+    def klass
+      self.class.name
+    end
     attr_accessor :operation
+    attr_accessor :listen_to
 
     def create(payload)
       # noop
@@ -30,9 +33,10 @@ module MultipleMan
     module ClassMethods
       def listen_to(model, operation: '#')
         listener = self.new
-        listener.klass = model
+        listener.listen_to = model
         listener.operation = operation
         Subscribers::Registry.register(listener)
+        listener
       end
     end
   end
