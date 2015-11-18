@@ -5,7 +5,7 @@ module MultipleMan
         proc { queue << RemoveCommand.new(thread_id); reaper.push(channel) }
       end
 
-      def initialize(config, reaper)
+      def initialize(_, reaper)
         @reaper = reaper
         @queue = Queue.new
 

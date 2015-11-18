@@ -34,7 +34,7 @@ module MultipleMan::Listeners
     def listen
 
       MultipleMan.logger.info "Listening for #{subscription.klass} with routing key #{routing_key}."
-      queue.bind(connection.topic, routing_key: routing_key).subscribe(ack: true) do |delivery_info, meta_data, payload|
+      queue.bind(connection.topic, routing_key: routing_key).subscribe(ack: true) do |delivery_info, _, payload|
         process_message(delivery_info, payload)
       end
     end
@@ -44,7 +44,7 @@ module MultipleMan::Listeners
       begin
         payload = JSON.parse(payload).with_indifferent_access
         subscription.send(operation(delivery_info, payload), payload)
-      rescue Exception => ex
+      rescue ex
         handle_error(ex, delivery_info)
       else
         MultipleMan.logger.debug "   Successfully processed!"
