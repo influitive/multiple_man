@@ -5,7 +5,7 @@ module MultipleMan::Listeners
     end
 
     # seeds should only ever be a create
-    def operation(delivery_info, payload)
+    def operation(_, _)
       "create"
     end
 

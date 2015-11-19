@@ -14,15 +14,15 @@ module MultipleMan
     attr_accessor :operation
     attr_accessor :listen_to
 
-    def create(payload)
+    def create(_)
       # noop
     end
 
-    def update(payload)
+    def update(_)
       # noop
     end
 
-    def destroy(payload)
+    def destroy(_)
       # noop
     end
 
