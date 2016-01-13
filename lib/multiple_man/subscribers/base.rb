@@ -7,19 +7,19 @@ module MultipleMan::Subscribers
 
     attr_reader :klass
 
-    def create(_)
+    def create(payload)
       # noop
     end
 
-    def update(_)
+    def update(payload)
       # noop
     end
 
-    def destroy(_)
+    def destroy(payload)
       # noop
     end
 
-    def seed(_)
+    def seed(payload)
       # noop
     end
 

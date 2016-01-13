@@ -32,24 +32,24 @@ module MultipleMan::Listeners
     attr_accessor :subscription, :connection
 
     def listen
-
       MultipleMan.logger.info "Listening for #{subscription.klass} with routing key #{routing_key}."
-      queue.bind(connection.topic, routing_key: routing_key).subscribe(ack: true) do |delivery_info, _, payload|
-        process_message(delivery_info, payload)
+      queue.bind(connection.topic, routing_key: routing_key).subscribe(ack: true) do |delivery_info, properties, payload|
+        parsed_payload = MultipleMan::Payload::V1.new(delivery_info, properties, JSON.parse(payload).with_indifferent_access)
+
+        begin
+          process_message(parsed_payload)
+        rescue Exception => ex
+          handle_error(ex, delivery_info)
+        else
+          MultipleMan.logger.debug "   Successfully processed!"
+          queue.channel.acknowledge(delivery_info.delivery_tag, false)
+        end
       end
     end
 
-    def process_message(delivery_info, payload)
-      MultipleMan.logger.info "Processing message for #{delivery_info.routing_key}."
-      begin
-        payload = JSON.parse(payload).with_indifferent_access
-        subscription.send(operation(delivery_info, payload), payload)
-      rescue ex
-        handle_error(ex, delivery_info)
-      else
-        MultipleMan.logger.debug "   Successfully processed!"
-        queue.channel.acknowledge(delivery_info.delivery_tag, false)
-      end
+    def process_message(payload)
+      MultipleMan.logger.info "Processing message for #{payload}."
+      subscription.send(payload.operation, payload)
     end
 
     def handle_error(ex, delivery_info)

@@ -7,10 +7,9 @@ module MultipleMan
     end
 
     def populate(payload)
-      data = payload[:id].merge(payload[:data])
-      fields_for(data).each do |field|
+      fields_for(payload).each do |field|
         source, dest = field.is_a?(Array) ? field : [field, field]
-        populate_field(dest, data[source])
+        populate_field(dest, payload[source])
       end
       record
     end
@@ -37,8 +36,8 @@ module MultipleMan
       end
     end
 
-    def fields_for(data)
-      fields || data.keys
+    def fields_for(payload)
+      fields || payload.keys
     end
   end
 end

@@ -25,6 +25,8 @@ module MultipleMan
   require 'multiple_man/channel_maintenance/gc'
   require 'multiple_man/channel_maintenance/reaper'
 
+  require 'multiple_man/payload/v1'
+
   def self.logger
     configuration.logger
   end

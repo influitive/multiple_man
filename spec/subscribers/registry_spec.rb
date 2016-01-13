@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe MultipleMan::Subscribers::Registry do 
-  describe "register" do 
+describe MultipleMan::Subscribers::Registry do
+  describe "register" do
     it "should add a subscriber" do
       subscription = double(:subscriber)
       described_class.register(subscription)
