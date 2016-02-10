@@ -34,7 +34,7 @@ module MultipleMan::Listeners
     def listen
       MultipleMan.logger.info "Listening for #{subscription.klass} with routing key #{routing_key}."
       queue.bind(connection.topic, routing_key: routing_key).subscribe(ack: true) do |delivery_info, properties, payload|
-        parsed_payload = MultipleMan::Payload::V1.new(delivery_info, properties, JSON.parse(payload).with_indifferent_access)
+        parsed_payload = MultipleMan::Payload.build(delivery_info, properties, JSON.parse(payload).with_indifferent_access)
 
         begin
           process_message(parsed_payload)
