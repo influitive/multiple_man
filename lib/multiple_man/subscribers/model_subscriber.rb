@@ -10,9 +10,8 @@ module MultipleMan::Subscribers
     attr_accessor :options
 
     def create(payload)
-      id = payload[:id]
-      model = find_model(id)
-      MultipleMan::ModelPopulator.new(model, options[:fields]).populate(id: find_conditions(id), data: payload[:data])
+      model = find_model(payload)
+      MultipleMan::ModelPopulator.new(model, options[:fields]).populate(payload)
       model.save!
     end
 
@@ -20,18 +19,14 @@ module MultipleMan::Subscribers
     alias_method :seed, :create
 
     def destroy(payload)
-      model = find_model(payload[:id])
+      model = find_model(payload)
       model.destroy!
     end
 
   private
 
-    def find_model(id)
-      model_class.where(find_conditions(id)).first || model_class.new
-    end
-
-    def find_conditions(id)
-      id.kind_of?(Hash) ? cleanse_id(id) : {multiple_man_identifier: id}
+    def find_model(payload)
+      model_class.where(cleanse_id(payload.identify_by)).first || model_class.new
     end
 
     def cleanse_id(hash)
