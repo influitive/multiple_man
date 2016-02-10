@@ -19,7 +19,6 @@ module MultipleMan
   require 'multiple_man/listeners/listener'
   require 'multiple_man/listeners/seeder_listener'
   require 'multiple_man/model_populator'
-  require 'multiple_man/identity'
   require 'multiple_man/publish'
 
   require 'multiple_man/channel_maintenance/gc'
@@ -27,6 +26,7 @@ module MultipleMan
 
   require 'multiple_man/payload/payload'
   require 'multiple_man/payload/v1'
+  require 'multiple_man/payload/v2'
 
   def self.logger
     configuration.logger

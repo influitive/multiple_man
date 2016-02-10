@@ -6,15 +6,6 @@ describe MultipleMan::PayloadGenerator do
 
   let(:mock_object) { PayloadMockClass.new(1,2) }
 
-  describe "operation" do
-    it "should be whatever was passed in" do
-      expect(described_class.new(mock_object, :update).operation).to eq('update')
-    end
-    it "should be create by default" do
-      expect(described_class.new(mock_object).operation).to eq('create')
-    end
-  end
-
   describe "data" do
     context "with a serializer" do
       it "should return stuff from the serializer" do
@@ -34,11 +25,23 @@ describe MultipleMan::PayloadGenerator do
       end
     end
   end
+  
+  describe "payload" do
+    it "should output data" do
+      MultipleMan::AttributeExtractor.any_instance.stub(:as_json).and_return({c: 3, d: 4})
+      described_class.new(mock_object, :create, { fields: [:c, :d] }).payload.should == {c: 3, d: 4}.to_json
+    end  
+  end
 
-  describe "id" do
-    it "should defer to identity" do
-      MultipleMan::Identity::MultipleField.any_instance.stub(:value).and_return("foo_1")
-      described_class.new(mock_object).id.should == "foo_1"
+  describe "headers" do
+    it "should output version 2" do
+      described_class.new(mock_object, :create, { fields: [:c, :d] }).headers['version'].should == '2'
+    end  
+    it "should include identity_by headers" do
+      described_class.new(mock_object, :create, { fields: [:c, :d] }).headers['identify_by'].should == ['id'].to_json
+    end
+    it "should support custom identify by information" do
+      described_class.new(mock_object, :create, { identify_by: [:c, :d], fields: [:c, :d] }).headers['identify_by'].should == ['c', 'd'].to_json
     end
   end
 
