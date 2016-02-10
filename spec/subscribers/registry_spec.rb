@@ -5,7 +5,7 @@ describe MultipleMan::Subscribers::Registry do
     it "should add a subscriber" do
       subscription = double(:subscriber)
       described_class.register(subscription)
-      described_class.subscriptions[0].should == subscription
+      described_class.subscriptions.should include subscription
     end
   end
 end
