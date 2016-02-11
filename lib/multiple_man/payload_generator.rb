@@ -7,20 +7,22 @@ module MultipleMan
     end
 
     def payload
-      {
-        type: type,
-        operation: operation,
-        id: id,
-        data: data
-      }.to_json
+      data.to_json
+    end
+    
+    def headers
+      { 
+        'version' => '2',
+        'identify_by' => identify_by.to_json 
+      }
     end
 
     def type
       options[:as] || record.class.name
     end
 
-    def id
-      Identity.build(record, options).value
+    def identify_by
+      [* (options[:identify_by] || :id) ]       
     end
 
     def data

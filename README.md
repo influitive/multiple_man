@@ -184,6 +184,26 @@ MyModel.multiple_man_publish(:seed)
 
 3. Stop the seeder rake task when all of your messages have been processed. You can check your RabbitMQ server
 
+## Versioning
+
+Because you may have different versions of MultipleMan between publishers and subscribers,
+MultipleMan attaches **versions** to every message sent. This ensures that updates to payloads,
+metadata, etc. will not affect processing of your messages.
+
+In general, a subscriber will not be able to process messages published by a newer version of
+MultipleMan. We use **minor versions** to indicate changes that may contain a breaking change 
+to payload formats.
+
+As a consequence, when upgrading MultipleMan, it's always safe to upgrade patch versions, but
+when upgrading to a new major or minor version, ensure that you upgrade your subscribers
+prior to upgrading your publishers (if two services both subscribe and publish, you'll need to 
+update them synchronously.) 
+
+Currently, the following versions support the following payload versions:
+
+- **Payload v1** - 1.0.x
+- **Payload v2** - 1.1.x
+
 ## Contributing
 
 1. Fork it
