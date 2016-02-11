@@ -39,6 +39,18 @@ describe MultipleMan::Subscribers::ModelSubscriber do
       MockClass.should_receive(:where).with('id' => 5).and_return([mock_object])
       described_class.new(MockClass, {}).create(payload)
     end
+    
+    it "should use overridden identify_by if available" do
+      mock_object = double(MockClass).as_null_object
+      MockClass.should_receive(:where).with(:a => 1).and_return([mock_object])
+      described_class.new(MockClass, {identify_by: :a}).create(payload)
+    end
+    
+    it "should support an array of identify bys" do
+      mock_object = double(MockClass).as_null_object
+      MockClass.should_receive(:where).with(a: 1, b: 2).and_return([mock_object])
+      described_class.new(MockClass, {identify_by: [:a, :b]}).create(payload)
+    end
   end
 
   describe "destroy" do

@@ -136,6 +136,27 @@ You can pass the following options to the `subscribe` call:
 
 - `fields` - Specify which fields you want to receive from
   the publisher. If this is blank, then any field that is published where your subscriber model has a corresponding `field=` method will be subscribed to.
+- `to` - If the model name on the publishing end differs from your model name, specify
+  the name of the model from the publisher's perspective.
+- `identify_by` - If you want to identify this model by a different set of fields than
+  what the publisher specifies, you can specify it here. For instance, you may have an 
+  `id` numeric field on the publisher, but the publisher also supplies a `uuid` field. You
+  can specify `identify_by: :uuid` to override which field is used. Accepts either a single
+  field or an array of fields.
+  
+You can also remap fields within the subscriber, like so:
+
+    class Widget < ActiveRecord::Base
+      include MultipleMan::Subscriber
+      subscribe fields: {
+        id: :id,
+        name: :remote_name
+      }
+    end
+    
+The keys in the supplied hash indicate the field name on the payload (i.e. the publisher
+side) and the values represent which local field you want to map them to.
+
 
 By default, MultipleMan will attempt to identify which model on the subscriber matches a model sent by the publisher by id. However, if your publisher specifies an `identify_by` array, MultipleMan will locate your record by finding a record where all of those fields match.
 
