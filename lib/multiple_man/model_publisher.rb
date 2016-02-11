@@ -33,7 +33,7 @@ module MultipleMan
 
       MultipleMan.logger.debug("  Record Data: #{data} | Routing Key: #{routing_key}")
 
-      connection.topic.publish(data.payload, routing_key: routing_key)
+      connection.topic.publish(data.payload, routing_key: routing_key, headers: data.headers)
     end
 
     def all_records(records, &block)

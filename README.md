@@ -136,6 +136,27 @@ You can pass the following options to the `subscribe` call:
 
 - `fields` - Specify which fields you want to receive from
   the publisher. If this is blank, then any field that is published where your subscriber model has a corresponding `field=` method will be subscribed to.
+- `to` - If the model name on the publishing end differs from your model name, specify
+  the name of the model from the publisher's perspective.
+- `identify_by` - If you want to identify this model by a different set of fields than
+  what the publisher specifies, you can specify it here. For instance, you may have an 
+  `id` numeric field on the publisher, but the publisher also supplies a `uuid` field. You
+  can specify `identify_by: :uuid` to override which field is used. Accepts either a single
+  field or an array of fields.
+  
+You can also remap fields within the subscriber, like so:
+
+    class Widget < ActiveRecord::Base
+      include MultipleMan::Subscriber
+      subscribe fields: {
+        id: :id,
+        name: :remote_name
+      }
+    end
+    
+The keys in the supplied hash indicate the field name on the payload (i.e. the publisher
+side) and the values represent which local field you want to map them to.
+
 
 By default, MultipleMan will attempt to identify which model on the subscriber matches a model sent by the publisher by id. However, if your publisher specifies an `identify_by` array, MultipleMan will locate your record by finding a record where all of those fields match.
 
@@ -183,6 +204,26 @@ MyModel.multiple_man_publish(:seed)
 ```
 
 3. Stop the seeder rake task when all of your messages have been processed. You can check your RabbitMQ server
+
+## Versioning
+
+Because you may have different versions of MultipleMan between publishers and subscribers,
+MultipleMan attaches **versions** to every message sent. This ensures that updates to payloads,
+metadata, etc. will not affect processing of your messages.
+
+In general, a subscriber will not be able to process messages published by a newer version of
+MultipleMan. We use **minor versions** to indicate changes that may contain a breaking change 
+to payload formats.
+
+As a consequence, when upgrading MultipleMan, it's always safe to upgrade patch versions, but
+when upgrading to a new major or minor version, ensure that you upgrade your subscribers
+prior to upgrading your publishers (if two services both subscribe and publish, you'll need to 
+update them synchronously.) 
+
+Currently, the following versions support the following payload versions:
+
+- **Payload v1** - 1.0.x
+- **Payload v2** - 1.1.x
 
 ## Contributing
 

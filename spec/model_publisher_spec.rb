@@ -30,7 +30,7 @@ describe MultipleMan::ModelPublisher do
   describe "publish" do
     it "should send the jsonified version of the model to the correct routing key" do
       MultipleMan::AttributeExtractor.any_instance.should_receive(:as_json).and_return({foo: "bar"})
-      topic_stub.should_receive(:publish).with('{"type":"MockObject","operation":"create","id":{"id":10},"data":{"foo":"bar"}}', routing_key: "app.MockObject.create")
+      topic_stub.should_receive(:publish).with('{"foo":"bar"}', routing_key: "app.MockObject.create", headers:{'version' => '2', 'identify_by' => ['id'].to_json})
       described_class.new(fields: [:foo]).publish(MockObject.new)
     end
 
@@ -55,7 +55,7 @@ describe MultipleMan::ModelPublisher do
 
     it "should get its data from the serializer" do
       obj = MockObject.new
-      topic_stub.should_receive(:publish).with('{"type":"MockObject","operation":"create","id":{"id":10},"data":{"a":"yes"}}', routing_key: "app.MockObject.create")
+      topic_stub.should_receive(:publish).with('{"a":"yes"}', routing_key: "app.MockObject.create", headers: {'version' => '2', 'identify_by' => ['id'].to_json})
       subject.publish(obj)
     end
   end
