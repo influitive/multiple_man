@@ -4,11 +4,12 @@ describe MultipleMan::Subscribers::ModelSubscriber do
   class MockClass
 
   end
-
+  let(:properties) {
+     double(:properties, headers: {'identify_by' => ['id'].to_json })
+  }
   let(:payload) {
-    MultipleMan::Payload::V1.new(nil, nil, {
-      'id' => {'id' => 5 },
-      'data' => {'a' => 1, 'b' => 2}
+    MultipleMan::Payload::V2.new(nil, properties, {
+      'a' => 1, 'b' => 2, 'id' => 5
     })
   }
 

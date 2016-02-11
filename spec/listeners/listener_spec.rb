@@ -38,25 +38,41 @@ describe MultipleMan::Listeners::Listener do
     end
   end
 
-  specify "process_message should send the correct data" do
-    connection_stub = double(MultipleMan::Connection).as_null_object
-    MultipleMan::Connection.stub(:new).and_return(connection_stub)
-    subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#").as_null_object
-    listener = described_class.new(subscriber)
+  context "v1" do
+    specify "process_message should send the correct data" do
+        connection_stub = double(MultipleMan::Connection).as_null_object
+        MultipleMan::Connection.stub(:new).and_return(connection_stub)
+        subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#").as_null_object
+        listener = described_class.new(subscriber)
 
-    subscriber.should_receive(:create).with(instance_of(MultipleMan::Payload::V1))
+        subscriber.should_receive(:create).with(instance_of(MultipleMan::Payload::V1))
 
-    listener.process_message(MultipleMan::Payload::V1.new(double(:delivery_info, routing_key: 'app.MockClass1.create'), nil, "data" => {'a' => 1, 'b' => 2}))
+        listener.process_message(MultipleMan::Payload::V1.new(double(:delivery_info, routing_key: 'app.MockClass1.create'), nil, "data" => {'a' => 1, 'b' => 2}))
+    end
+
+    specify "process_message should use the payload to determine the operation if it's available" do
+        connection_stub = double(MultipleMan::Connection).as_null_object
+        MultipleMan::Connection.stub(:new).and_return(connection_stub)
+        subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#").as_null_object
+        listener = described_class.new(subscriber)
+
+        subscriber.should_receive(:create)
+
+        listener.process_message(MultipleMan::Payload::V1.new(double(:delivery_info, routing_key: 'app.MockClass1, update'), nil, "operation" => "create", "data" => {'a' => 1, 'b' => 2}))
+    end
   end
+  
+  context "v2" do
+    specify "process_message should send the correct data" do
+        connection_stub = double(MultipleMan::Connection).as_null_object
+        MultipleMan::Connection.stub(:new).and_return(connection_stub)
+        subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#").as_null_object
+        properties = double(:properties, headers: { 'version' => '2', 'identify_by' => ['id'].to_json })
+        listener = described_class.new(subscriber)
 
-  specify "process_message should use the payload to determine the operation if it's available" do
-    connection_stub = double(MultipleMan::Connection).as_null_object
-    MultipleMan::Connection.stub(:new).and_return(connection_stub)
-    subscriber = double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1, routing_key: "MockClass1.#").as_null_object
-    listener = described_class.new(subscriber)
+        subscriber.should_receive(:create).with(instance_of(MultipleMan::Payload::V2))
 
-    subscriber.should_receive(:create)
-
-    listener.process_message(MultipleMan::Payload::V1.new(double(:delivery_info, routing_key: 'app.MockClass1, update'), nil, "operation" => "create", "data" => {'a' => 1, 'b' => 2}))
+        listener.process_message(MultipleMan::Payload::V2.new(double(:delivery_info, routing_key: 'app.MockClass1.create'), properties, {'a' => 1, 'b' => 2}))
+    end
   end
 end

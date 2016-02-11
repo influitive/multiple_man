@@ -2,21 +2,18 @@ require 'spec_helper'
 
 describe MultipleMan::ModelPopulator do
   class MockModel
-    attr_accessor :a, :b, :multiple_man_identifier
+    attr_accessor :a, :b, :id
   end
 
   describe "populate" do
     let(:model) { MockModel.new }
-    let(:payload) { MultipleMan::Payload::V1.new(nil, nil, {
-      'id' => id,
-      'data' => data
-    })}
-    let(:data) { { 'a' => 1, 'b' => 2 } }
-    let(:id) { { 'multiple_man_identifier' => 'app_1' }}
+    let(:payload) { MultipleMan::Payload::V2.new(nil, properties, data)}
+    let(:data) { { 'a' => 1, 'b' => 2, 'id' => 1 } }
+    let(:properties) { double(:properties, headers: { 'identify_by' => ['id'].to_json })}
     let(:fields) { nil }
     subject { described_class.new(model, fields).populate(payload) }
 
-    its(:multiple_man_identifier) { should == 'app_1' }
+    its(:id) { should == 1 }
 
     context "with fields defined" do
       let(:fields) { [:a] }
