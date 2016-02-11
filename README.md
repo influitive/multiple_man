@@ -199,6 +199,11 @@ when upgrading to a new major or minor version, ensure that you upgrade your sub
 prior to upgrading your publishers (if two services both subscribe and publish, you'll need to 
 update them synchronously.) 
 
+Currently, the following versions support the following payload versions:
+
+- **Payload v1** - 1.0.x
+- **Payload v2** - 1.1.x
+
 ## Contributing
 
 1. Fork it
