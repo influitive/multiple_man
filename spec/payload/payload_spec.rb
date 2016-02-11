@@ -18,6 +18,10 @@ describe MultipleMan::Payload do
       payload = described_class.build(nil, properties.new("1"), nil)
       payload.should be_instance_of(MultipleMan::Payload::V1)
     end
+    it "should support v2" do
+      payload = described_class.build(nil, properties.new("2"), nil)
+      payload.should be_instance_of(MultipleMan::Payload::V2)
+    end
     it "should fail on an unknown version" do
       expect{ described_class.build(nil, properties.new("3"), nil)}.to raise_exception
     end
