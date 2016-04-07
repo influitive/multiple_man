@@ -1,12 +1,13 @@
 module MultipleMan::Subscribers
   class Registry
-    @subscriptions = []
-    class << self
-      attr_accessor :subscriptions
+    attr_reader :subscriptions
 
-      def register(subscription)
-        self.subscriptions << subscription
-      end
+    def initialize
+      @subscriptions = []
+    end
+
+    def register(subscription)
+      self.subscriptions << subscription
     end
   end
 end

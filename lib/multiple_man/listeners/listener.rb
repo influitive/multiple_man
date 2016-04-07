@@ -8,7 +8,7 @@ module MultipleMan::Listeners
       def start
         MultipleMan.logger.debug "Starting listeners."
 
-        MultipleMan::Subscribers::Registry.subscriptions.each do |subscription|
+        MultipleMan.configuration.listeners.each do |subscription|
           new(subscription).listen
         end
       end
