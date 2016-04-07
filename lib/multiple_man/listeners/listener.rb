@@ -44,7 +44,7 @@ module MultipleMan::Listeners
       begin
         payload = JSON.parse(payload).with_indifferent_access
         subscription.send(operation(delivery_info, payload), payload)
-      rescue ex
+      rescue => ex
         handle_error(ex, delivery_info)
       else
         MultipleMan.logger.debug "   Successfully processed!"
