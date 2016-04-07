@@ -8,13 +8,6 @@ describe MultipleMan::Subscribers::Base do
     described_class.new(MockClass).routing_key.should =~ /\.MockClass\.\#$/
   end
 
-  specify "queue name should be the app name + class" do
-    MultipleMan.configure do |config|
-      config.app_name = "test"
-    end
-    described_class.new(MockClass).queue_name.should =~ /\.test\.MockClass$/
-  end
-
   specify "it should be alright to use a string for a class name" do
     described_class.new("MockClass").routing_key.should =~ /\.MockClass\.\#$/
   end

@@ -1,5 +1,5 @@
-module MultipleMan::Listeners
-  class SeederListener < Listener
+module MultipleMan::Consumers
+  class Seed < General
 
     private
 

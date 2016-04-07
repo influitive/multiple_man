@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MultipleMan::Listeners::Listener do
+describe MultipleMan::Consumers::General do
   let(:listener1) {
     Class.new do
       include MultipleMan::Listener

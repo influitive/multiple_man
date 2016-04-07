@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MultipleMan::Listeners::SeederListener do
+describe MultipleMan::Consumers::Seed do
   let(:listener1) {
     Class.new do
       include MultipleMan::Listener

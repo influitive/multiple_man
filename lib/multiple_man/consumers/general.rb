@@ -2,8 +2,8 @@ require 'json'
 require 'active_support/core_ext/hash'
 
 module MultipleMan
-  module Listeners
-    class Listener
+  module Consumers
+    class General
       def initialize(subscribers:, queue:, topic:)
         self.subscribers = subscribers
         @topic = topic
