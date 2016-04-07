@@ -8,7 +8,7 @@ describe MultipleMan::Listeners::Listener do
 
   describe "start" do
     it "should listen to each subscription" do
-      MultipleMan::Subscribers::Registry.stub(:subscriptions).and_return([
+      MultipleMan.configuration.stub(:listeners).and_return([
         double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass1),
         double(MultipleMan::Subscribers::ModelSubscriber, klass: MockClass2)
       ])

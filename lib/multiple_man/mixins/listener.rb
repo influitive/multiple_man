@@ -1,10 +1,10 @@
 module MultipleMan
   module Listener
-    def Listener.included(base)
+    def self.included(base)
       base.extend(ClassMethods)
     end
 
-    def routing_key(operation=self.operation)
+    def routing_key(operation = self.operation)
       MultipleMan::RoutingKey.new(listen_to, operation).to_s
     end
 
@@ -14,15 +14,15 @@ module MultipleMan
     attr_accessor :operation
     attr_accessor :listen_to
 
-    def create(_)
+    def create(payload)
       # noop
     end
 
-    def update(_)
+    def update(payload)
       # noop
     end
 
-    def destroy(_)
+    def destroy(payload)
       # noop
     end
 
@@ -32,10 +32,10 @@ module MultipleMan
 
     module ClassMethods
       def listen_to(model, operation: '#')
-        listener = self.new
+        listener = new
         listener.listen_to = model
         listener.operation = operation
-        Subscribers::Registry.register(listener)
+        MultipleMan.configuration.register_listener(listener)
         listener
       end
     end

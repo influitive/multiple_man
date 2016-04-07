@@ -13,7 +13,7 @@ describe MultipleMan::Subscriber do
 
   describe "listen_to" do
     it "should register itself" do
-      MultipleMan::Subscribers::Registry.should_receive(:register).with(instance_of(mock_class))
+      MultipleMan.configuration.should_receive(:register_listener).with(instance_of(mock_class))
       mock_class.listen_to "Model"
     end
 

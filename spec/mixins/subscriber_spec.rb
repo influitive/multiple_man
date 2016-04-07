@@ -7,7 +7,7 @@ describe MultipleMan::Subscriber do
 
   describe "subscribe" do
     it "should register itself" do
-      MultipleMan::Subscribers::Registry.should_receive(:register).with(instance_of(MultipleMan::Subscribers::ModelSubscriber))
+      expect(MultipleMan.configuration).to receive(:register_listener).with(instance_of(MultipleMan::Subscribers::ModelSubscriber))
       MockClass.subscribe fields: [:foo, :bar]
     end
   end

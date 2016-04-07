@@ -1,5 +1,18 @@
 module MultipleMan
+  def self.configuration
+    @configuration ||= Configuration.new
+  end
+
+  def self.configure
+    yield(configuration) if block_given?
+  end
+
   class Configuration
+    attr_reader :subscriber_registry
+    attr_accessor :topic_name, :app_name, :connection, :enabled, :error_handler,
+                  :worker_concurrency, :reraise_errors, :connection_recovery
+
+    attr_writer :logger
 
     def initialize
       self.topic_name = "multiple_man"
@@ -12,6 +25,8 @@ module MultipleMan
         time_between_retries: 0.8,
         max_retries: 5
       }
+
+      @subscriber_registry = Subscribers::Registry.new
     end
 
     def logger
@@ -22,16 +37,12 @@ module MultipleMan
       @error_handler = block
     end
 
-    attr_accessor :topic_name, :app_name, :connection, :enabled, :error_handler,
-                  :worker_concurrency, :reraise_errors, :connection_recovery
-    attr_writer :logger
-  end
+    def listeners
+      subscriber_registry.subscriptions
+    end
 
-  def self.configuration
-    @configuration ||= Configuration.new
-  end
-
-  def self.configure
-    yield(configuration) if block_given?
+    def register_listener(listener)
+      subscriber_registry.register(listener)
+    end
   end
 end
