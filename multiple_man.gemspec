@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["ryan@influitive.com"]
   spec.description   = %q{MultipleMan syncs changes to ActiveRecord models via AMQP}
   spec.summary       = %q{MultipleMan syncs changes to ActiveRecord models via AMQP}
-  spec.homepage      = ""
+  spec.homepage      = "http://github.com/influitive/multiple_man"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
