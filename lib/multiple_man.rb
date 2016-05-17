@@ -39,11 +39,14 @@ module MultipleMan
   end
 
   def self.error(ex, options = {})
-    if configuration.error_handler
-      configuration.error_handler.call(ex)
-      raise ex if configuration.reraise_errors && options[:reraise] != false
+    raise ex unless configuration.error_handler
+
+    if configuration.error_handler.arity == 3
+      configuration.error_handler.call(ex, options[:payload], options[:delivery_info])
     else
-      raise ex
+      configuration.error_handler.call(ex)
     end
+
+    raise ex if configuration.reraise_errors && options[:reraise] != false
   end
 end
