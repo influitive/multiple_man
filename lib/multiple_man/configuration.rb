@@ -28,7 +28,10 @@ module MultipleMan
       }
 
       @subscriber_registry = Subscribers::Registry.new
-      self.queue_name = "#{topic_name}.#{app_name}"
+    end
+
+    def queue_name
+      @queue_name ||= "#{topic_name}.#{app_name}"
     end
 
     def logger
