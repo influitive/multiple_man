@@ -20,7 +20,7 @@ namespace :multiple_man do
   end
 
   def run_listener(listener, queue)
-    Rails.application.eager_load!
+    Rails.application.eager_load! if defined?(Rails)
 
     subscribers = MultipleMan.configuration.listeners
     topic = MultipleMan.configuration.topic_name
@@ -36,7 +36,7 @@ namespace :multiple_man do
 
   desc 'Run transitional worker'
   task transition_worker: :environment do
-    Rails.application.eager_load!
+    Rails.application.eager_load! if defined?(Rails)
 
     topic = MultipleMan.configuration.topic_name
     app_name = MultipleMan.configuration.app_name
