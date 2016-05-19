@@ -28,6 +28,7 @@ module MultipleMan::Subscribers
   private
 
     def find_model(id)
+      MultipleMan.logger.info "FIND: #{find_conditions(id)}"
       model_class.where(find_conditions(id)).first || model_class.new
     end
 
