@@ -11,7 +11,7 @@ module MultipleMan
     attr_reader :subscriber_registry
     attr_accessor :topic_name, :app_name, :connection, :enabled, :error_handler,
                   :worker_concurrency, :reraise_errors, :connection_recovery,
-                  :queue_name
+                  :queue_name, :prefetch_size
 
     attr_writer :logger
 
@@ -21,6 +21,7 @@ module MultipleMan
       self.enabled = true
       self.worker_concurrency = 1
       self.reraise_errors = true
+      self.prefetch_size = 100
       self.connection_recovery = {
         time_before_reconnect: 0.2,
         time_between_retries: 0.8,

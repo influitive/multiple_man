@@ -2,7 +2,7 @@ namespace :multiple_man do
   desc "Run multiple man listeners"
   task worker: :environment do
     channel = MultipleMan::Connection.connection.create_channel
-    channel.prefetch(100)
+    channel.prefetch(MultipleMan.configuration.prefetch_size)
     queue_name = MultipleMan.configuration.queue_name
     queue = channel.queue(queue_name, durable: true, auto_delete: false)
 
@@ -12,7 +12,7 @@ namespace :multiple_man do
   desc 'Run a seeding listener'
   task seed: :environment do
     channel = MultipleMan::Connection.connection.create_channel
-    channel.prefetch(100)
+    channel.prefetch(MultipleMan.configuration.prefetch_size)
     queue_name = MultipleMan.configuration.queue_name + '.seed'
     queue = channel.queue(queue_name, durable: false, auto_delete: true)
 
@@ -41,7 +41,7 @@ namespace :multiple_man do
     topic = MultipleMan.configuration.topic_name
     app_name = MultipleMan.configuration.app_name
     channel = MultipleMan::Connection.connection.create_channel
-    channel.prefetch(100)
+    channel.prefetch(MultipleMan.configuration.prefetch_size)
 
     MultipleMan.configuration.listeners.each do |listener|
       queue_name = listener.respond_to?(:queue_name) ?
