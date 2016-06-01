@@ -20,7 +20,7 @@ module MultipleMan::Consumers
     end
 
     def process_message(delivery_info, payload)
-      MultipleMan.logger.info "Processing message for #{delivery_info.routing_key}."
+      MultipleMan.logger.debug "Processing message for #{delivery_info.routing_key}."
 
       payload = JSON.parse(payload).with_indifferent_access
       subscription.send(operation(delivery_info, payload), payload)

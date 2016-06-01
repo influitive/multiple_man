@@ -15,7 +15,7 @@ module MultipleMan
         create_bindings
 
         queue.subscribe(manual_ack: true) do |delivery_info, meta_data, payload|
-          MultipleMan.logger.info "Processing message for #{delivery_info.routing_key}."
+          MultipleMan.logger.debug "Processing message for #{delivery_info.routing_key}."
           message = JSON.parse(payload).with_indifferent_access
           receive(delivery_info, meta_data, message)
         end
@@ -37,7 +37,7 @@ module MultipleMan
         dispatch_subscribers(message, method, delivery_info.routing_key)
         queue.channel.acknowledge(delivery_info.delivery_tag, false)
 
-        MultipleMan.logger.info "Successfully processed! #{delivery_info.routing_key}"
+        MultipleMan.logger.debug "Successfully processed! #{delivery_info.routing_key}"
       rescue => ex
         MultipleMan.logger.debug "\tError #{ex.message} \n#{ex.backtrace}"
         MultipleMan.error(ex, reraise: false, payload: message, delivery_info: delivery_info)
