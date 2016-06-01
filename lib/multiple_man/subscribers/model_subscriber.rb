@@ -13,8 +13,12 @@ module MultipleMan::Subscribers
       id = payload[:id]
       model = find_model(id)
       MultipleMan::ModelPopulator.new(model, options[:fields]).populate(id: find_conditions(id), data: payload[:data])
-      MultipleMan.logger.info "SUBSCRIBER MODEL CHANGES: #{model.changed_attributes.inspect}"
       model.save!
+    rescue
+      MultipleMan.logger.info "FIND: #{find_conditions(id)}"
+      MultipleMan.logger.info "SUBSCRIBER MODEL CHANGES: #{model.changed_attributes.inspect}"
+
+      raise
     end
 
     alias_method :update, :create
@@ -28,7 +32,7 @@ module MultipleMan::Subscribers
   private
 
     def find_model(id)
-      MultipleMan.logger.info "FIND: #{find_conditions(id)}"
+
       model_class.where(find_conditions(id)).first || model_class.new
     end
 
