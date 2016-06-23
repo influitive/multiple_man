@@ -2,6 +2,9 @@ require "multiple_man/version"
 require 'active_support'
 
 module MultipleMan
+  Error = Class.new(StandardError)
+  ConsumerError = Class.new(Error)
+  
   require 'multiple_man/railtie' if defined?(Rails)
 
   require 'multiple_man/mixins/publisher'

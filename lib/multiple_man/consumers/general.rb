@@ -39,9 +39,13 @@ module MultipleMan
 
         MultipleMan.logger.debug "Successfully processed! #{delivery_info.routing_key}"
       rescue => ex
-        MultipleMan.logger.debug "\tError #{ex.message} \n#{ex.backtrace}"
-        MultipleMan.error(ex, reraise: false, payload: message, delivery_info: delivery_info)
-        queue.channel.nack(delivery_info.delivery_tag)
+        begin
+          raise ConsumerError
+        rescue => wrapped_ex
+          MultipleMan.logger.debug "\tError #{wrapped_ex.message} \n#{wrapped_ex.backtrace}"
+          MultipleMan.error(wrapped_ex, reraise: false, payload: message, delivery_info: delivery_info)
+          queue.channel.nack(delivery_info.delivery_tag)
+        end
       end
 
       def dispatch_subscribers(message, method, routing_key)
