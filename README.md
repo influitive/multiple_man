@@ -68,6 +68,9 @@ exceptions encountered in an `after_commit` block, meaning
 that without handling these errors through the configuration,
 they will be silently ignored.
 
+Errors will be captured and wrapped in a MultipleMan::Error. The
+cause will be preserved in Exception#cause.
+
 ### Publishing models
 
 #### Directly from the model
