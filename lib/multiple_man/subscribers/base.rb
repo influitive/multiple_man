@@ -27,11 +27,11 @@ module MultipleMan::Subscribers
       MultipleMan::RoutingKey.new(klass, operation).to_s
     end
 
-    def queue_name
-      "#{MultipleMan.configuration.topic_name}.#{MultipleMan.configuration.app_name}.#{klass}"
+    def listen_to
+      klass
     end
 
-  private
+    private
 
     attr_writer :klass
   end

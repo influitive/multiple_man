@@ -2,6 +2,9 @@ require "multiple_man/version"
 require 'active_support'
 
 module MultipleMan
+  Error = Class.new(StandardError)
+  ConsumerError = Class.new(Error)
+  
   require 'multiple_man/railtie' if defined?(Rails)
 
   require 'multiple_man/mixins/publisher'
@@ -16,8 +19,9 @@ module MultipleMan
   require 'multiple_man/payload_generator'
   require 'multiple_man/connection'
   require 'multiple_man/routing_key'
-  require 'multiple_man/listeners/listener'
-  require 'multiple_man/listeners/seeder_listener'
+  require 'multiple_man/consumers/general'
+  require 'multiple_man/consumers/transitional'
+  require 'multiple_man/consumers/seed'
   require 'multiple_man/model_populator'
   require 'multiple_man/identity'
   require 'multiple_man/publish'
@@ -38,11 +42,14 @@ module MultipleMan
   end
 
   def self.error(ex, options = {})
-    if configuration.error_handler
-      configuration.error_handler.call(ex)
-      raise ex if configuration.reraise_errors && options[:reraise] != false
+    raise ex unless configuration.error_handler
+
+    if configuration.error_handler.arity == 3
+      configuration.error_handler.call(ex, options[:payload], options[:delivery_info])
     else
-      raise ex
+      configuration.error_handler.call(ex)
     end
+
+    raise ex if configuration.reraise_errors && options[:reraise] != false
   end
 end
