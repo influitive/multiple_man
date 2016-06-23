@@ -199,6 +199,14 @@ transitional worker will connect to your old queues, unbind them and allow them
 to drain. Once the queues are empty you can safely shut the transitional worker
 down and delete the old queues.
 
+So for example if you use a Procfile:
+
+```
+multiple_man_worker: rake multiple_man:worker
+# Temporary until old queues are drained
+transition_worker: rake multiple_man:transition_worker
+```
+
 ## Contributing
 
 1. Fork it
