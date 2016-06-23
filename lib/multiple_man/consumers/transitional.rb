@@ -27,7 +27,7 @@ module MultipleMan::Consumers
       MultipleMan.logger.debug "   Successfully processed!"
       queue.channel.acknowledge(delivery_info.delivery_tag, false)
     rescue => ex
-      handle_error(ex, delivery_info)
+      raise MultipleMan::ConsumerError rescue handle_error($!, delivery_info)
     end
 
     def handle_error(ex, delivery_info)
