@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+# Add gem directory to load path - (compatible with Ruby 1.9+)
+$LOAD_PATH.unshift File.expand_path('../lib', File.dirname(__FILE__))
+
+# Add the current working directory to the load path so we can load the config/environment
+$LOAD_PATH.unshift Dir.pwd
+
+require 'multiple_man'
+
+MultipleMan::CLI.run(ARGV)

@@ -4,7 +4,7 @@ require 'active_support'
 module MultipleMan
   Error = Class.new(StandardError)
   ConsumerError = Class.new(Error)
-  
+
   require 'multiple_man/railtie' if defined?(Rails)
 
   require 'multiple_man/mixins/publisher'
@@ -25,6 +25,8 @@ module MultipleMan
   require 'multiple_man/model_populator'
   require 'multiple_man/identity'
   require 'multiple_man/publish'
+  require 'multiple_man/runner'
+  require 'multiple_man/cli'
 
   require 'multiple_man/channel_maintenance/gc'
   require 'multiple_man/channel_maintenance/reaper'
