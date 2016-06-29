@@ -69,7 +69,7 @@ module MultipleMan
     end
 
     def channel
-      Connection.connection.create_channel
+      @channel ||= Connection.connection.create_channel
     end
 
     def config
