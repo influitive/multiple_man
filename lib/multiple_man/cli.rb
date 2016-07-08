@@ -17,7 +17,7 @@ module MultipleMan
 
     def set_opts
       on('--seed', 'listen to the seeding queue') do
-        options[:mode] == :seed
+        options[:mode] = :seed
       end
       on('-e', '--environment-path PATH', 'Set the path to load the web framework (default: config/environment)') do |value|
         options[:environment_path] = value
