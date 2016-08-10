@@ -2,17 +2,25 @@ require 'active_support/core_ext'
 
 module MultipleMan
   class ModelPublisher
+    DEFAULT_OPTIONS = {
+      update_unless: ->(r) {
+        r.respond_to?(:previous_changes) && r.previous_changes.blank?
+      }
+    }.freeze
 
     def initialize(options = {})
-      self.options = options.with_indifferent_access
+      @options = DEFAULT_OPTIONS.merge(options).with_indifferent_access
+      @update_unless = @options[:update_unless]
     end
 
-    def publish(records, operation=:create)
+    def publish(records, operation = :create)
       return unless MultipleMan.configuration.enabled
 
       Connection.connect do |connection|
         ActiveSupport::Notifications.instrument('multiple_man.publish_messages') do
           all_records(records) do |record|
+            next if :update == operation && update_unless.call(record)
+
             ActiveSupport::Notifications.instrument('multiple_man.publish_message') do
               push_record(connection, record, operation)
             end
@@ -25,7 +33,7 @@ module MultipleMan
 
   private
 
-    attr_accessor :options
+    attr_reader :options, :update_unless
 
     def push_record(connection, record, operation)
       data = PayloadGenerator.new(record, operation, options)

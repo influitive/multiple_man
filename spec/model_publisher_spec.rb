@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MultipleMan::ModelPublisher do 
+describe MultipleMan::ModelPublisher do
   let(:channel_stub) { double(Bunny::Channel, topic: topic_stub)}
   let(:topic_stub) { double(Bunny::Exchange, publish: nil) }
 
@@ -32,6 +32,21 @@ describe MultipleMan::ModelPublisher do
       MultipleMan::AttributeExtractor.any_instance.should_receive(:as_json).and_return({foo: "bar"})
       topic_stub.should_receive(:publish).with('{"type":"MockObject","operation":"create","id":{"id":10},"data":{"foo":"bar"}}', routing_key: "app.MockObject.create")
       described_class.new(fields: [:foo]).publish(MockObject.new)
+    end
+
+    it 'skips updates for models with no changes by default' do
+      expect(topic_stub).to_not receive(:publish)
+
+      model = OpenStruct.new(previous_changes: [])
+      described_class.new(fields: [:foo]).publish(model, :update)
+    end
+
+    it 'allows skipping updates' do
+      expect(topic_stub).to_not receive(:publish)
+
+      model = OpenStruct.new(previous_changes: [])
+      described_class.new(fields: [:foo], update_unless: ->(r) { true })
+        .publish(model, :update)
     end
 
     it "should call the error handler on error" do
