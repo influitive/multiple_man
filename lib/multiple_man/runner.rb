@@ -48,7 +48,7 @@ module MultipleMan
       listener_class.new(
         queue: channel.queue(*queue_params),
         subscribers: listeners,
-        topic: topic_name
+        topic: topic
       )
     end
 
@@ -70,6 +70,10 @@ module MultipleMan
 
     def channel
       @channel ||= Connection.connection.create_channel
+    end
+
+    def topic
+      @topic ||= channel.topic(topic_name)
     end
 
     def config
