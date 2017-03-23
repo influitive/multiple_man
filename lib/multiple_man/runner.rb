@@ -41,7 +41,14 @@ module MultipleMan
 
     def preload_framework!
       Rails.application.eager_load! if defined?(Rails)
-      Hanami::Application.preload_applications! if defined?(Hanami)
+      if defined?(Hanami)
+        if Hanami::Application.respond_to?(:preload_applications!)
+          Hanami::Application.preload_applications!
+        end
+        if Hanami.respond_to?(:boot)
+          Hanami.boot
+        end
+      end
     end
 
     def build_listener
