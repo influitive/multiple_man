@@ -53,6 +53,11 @@ calling MultipleMan.configure like so:
         ErrorLogger.log(exception)
       end
 
+      # Add opts that go directly to the bunny constructor (Advanced)
+      config.bunny_opts = {
+        tls_ca_certificates: ['/usr/lib/ssl/certs/cacert.pem']
+      }
+
       # Where you want to log errors to. Should be an instance of Logger
       # Defaults to the Rails logger (for Rails) or STDOUT otherwise.
       config.logger = Logger.new(STDOUT)

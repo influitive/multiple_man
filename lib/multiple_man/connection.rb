@@ -40,10 +40,12 @@ module MultipleMan
         @connection ||= begin
           connection = Bunny.new(
             MultipleMan.configuration.connection,
-            heartbeat_interval: 5,
-            automatically_recover: true,
-            recover_from_connection_close: true,
-            network_recovery_interval: MultipleMan.configuration.connection_recovery[:time_before_reconnect]
+            {
+              heartbeat_interval: 5,
+              automatically_recover: true,
+              recover_from_connection_close: true,
+              network_recovery_interval: MultipleMan.configuration.connection_recovery[:time_before_reconnect]
+            }.merge(MultipleMan.configuration.bunny_opts)
           )
           MultipleMan.logger.debug "Connecting to #{MultipleMan.configuration.connection}"
           connection.start
