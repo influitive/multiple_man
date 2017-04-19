@@ -76,7 +76,7 @@ module MultipleMan
 
     def initialize(channel)
       self.channel = channel
-      self.topic = channel.topic(topic_name)
+      self.topic = channel.topic(topic_name, durable: true)
     end
 
     def topic_name
