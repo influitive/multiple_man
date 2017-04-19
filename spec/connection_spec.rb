@@ -13,7 +13,7 @@ describe MultipleMan::Connection do
   it "should open a connection and a channel" do
     MultipleMan::Connection.should_receive(:connection).and_return(mock_bunny)
     mock_bunny.should_receive(:create_channel).once.and_return(mock_channel)
-    expect(mock_channel).to receive(:topic).with(MultipleMan.configuration.topic_name)
+    expect(mock_channel).to receive(:topic).with(MultipleMan.configuration.topic_name, durable: true)
 
     described_class.connect { }
   end
