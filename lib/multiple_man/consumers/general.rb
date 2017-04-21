@@ -42,7 +42,7 @@ module MultipleMan
         begin
           raise ConsumerError
         rescue => wrapped_ex
-          MultipleMan.logger.debug "\tError #{wrapped_ex.message} \n#{wrapped_ex.backtrace}"
+          MultipleMan.logger.debug "\t#{wrapped_ex.class} #{wrapped_ex.cause.message} \n#{wrapped_ex.cause.backtrace}"
           MultipleMan.error(wrapped_ex, reraise: false, payload: message, delivery_info: delivery_info)
           queue.channel.nack(delivery_info.delivery_tag)
         end
