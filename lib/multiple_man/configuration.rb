@@ -11,7 +11,7 @@ module MultipleMan
     attr_reader :subscriber_registry
     attr_accessor :topic_name, :app_name, :connection, :enabled, :error_handler,
                   :worker_concurrency, :reraise_errors, :connection_recovery,
-                  :queue_name, :prefetch_size, :bunny_opts
+                  :queue_name, :prefetch_size, :bunny_opts, :exchange_opts
 
     attr_writer :logger
 
@@ -28,6 +28,7 @@ module MultipleMan
         max_retries: 5
       }
       self.bunny_opts = {}
+      self.exchange_opts = {}
 
       @subscriber_registry = Subscribers::Registry.new
     end
