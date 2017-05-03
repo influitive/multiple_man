@@ -58,6 +58,11 @@ calling MultipleMan.configure like so:
         tls_ca_certificates: ['/usr/lib/ssl/certs/cacert.pem']
       }
 
+      # Add opts that are used when creating the exchange
+      config.exchange_opts = {
+        durable: true
+      }
+
       # Where you want to log errors to. Should be an instance of Logger
       # Defaults to the Rails logger (for Rails) or STDOUT otherwise.
       config.logger = Logger.new(STDOUT)
