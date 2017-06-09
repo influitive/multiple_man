@@ -1,19 +1,6 @@
 require 'forwardable'
 
 module MultipleMan
-  def self.trap_signals!
-    return if @signals_trapped
-
-    @signals_trapped = true
-
-    handler = proc do |signal|
-      puts "received #{Signal.signame(signal)}"
-      exit
-    end
-
-    %w(INT QUIT TERM).each { |signal| Signal.trap(signal, handler) }
-  end
-
   class Runner
     extend Forwardable
 
@@ -26,11 +13,9 @@ module MultipleMan
     end
 
     def run
-      MultipleMan.trap_signals!
       preload_framework!
       channel.prefetch(prefetch_size)
       build_listener.listen
-      sleep
     end
 
     private

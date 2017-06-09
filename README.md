@@ -195,26 +195,6 @@ MyModel.multiple_man_publish(:seed)
 
 3. Stop the seeder rake task when all of your messages have been processed. You can check your RabbitMQ server
 
-## Upgrading to 1.0
-
-The major change is that MultipleMan will no longer create a queue per listener.
-There is only 1 queue that will have multiple bindings to the exchange so that
-you have a chance to maintain causal consistency.
-
-Assuming you are using vanilla MultipleMan you will need to run both the
-regular worker and the new 'transition_worker' for a short period. The
-transitional worker will connect to your old queues, unbind them and allow them
-to drain. Once the queues are empty you can safely shut the transitional worker
-down and delete the old queues.
-
-So for example if you use a Procfile:
-
-```
-multiple_man_worker: rake multiple_man:worker
-# Temporary until old queues are drained
-transition_worker: rake multiple_man:transition_worker
-```
-
 ## Contributing
 
 1. Fork it
