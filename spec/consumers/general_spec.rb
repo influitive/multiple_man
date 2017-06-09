@@ -29,7 +29,7 @@ describe MultipleMan::Consumers::General do
 
     expect(queue).to receive(:bind).with('some-topic', routing_key: subscriptions.first.routing_key).ordered
     expect(queue).to receive(:bind).with('some-topic', routing_key: subscriptions.last.routing_key).ordered
-    expect(queue).to receive(:subscribe).with(manual_ack: true).ordered
+    expect(queue).to receive(:subscribe).with(block: true, manual_ack: true).ordered
 
     subject = described_class.new(subscribers: subscriptions, queue: queue, topic: 'some-topic')
 

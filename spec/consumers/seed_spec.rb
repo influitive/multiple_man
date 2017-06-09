@@ -17,7 +17,7 @@ describe MultipleMan::Consumers::Seed do
     queue = double(Bunny::Queue, channel: channel)
 
     expect(queue).to receive(:bind).with('some-topic', routing_key: "multiple_man.seed.SomeClass")
-    expect(queue).to receive(:subscribe).with(manual_ack: true)
+    expect(queue).to receive(:subscribe).with(block: true, manual_ack: true)
 
     subject = described_class.new(subscribers: [listener1.new], queue: queue, topic: 'some-topic')
     subject.listen

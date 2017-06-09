@@ -14,7 +14,7 @@ module MultipleMan
         MultipleMan.logger.debug "Starting listeners."
         create_bindings
 
-        queue.subscribe(manual_ack: true) do |delivery_info, meta_data, payload|
+        queue.subscribe(block: true, manual_ack: true) do |delivery_info, meta_data, payload|
           MultipleMan.logger.debug "Processing message for #{delivery_info.routing_key}."
           message = JSON.parse(payload).with_indifferent_access
           receive(delivery_info, meta_data, message)
