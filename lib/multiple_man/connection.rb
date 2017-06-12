@@ -21,7 +21,7 @@ module MultipleMan
         retry
       else
         Thread.current[:multiple_man_exception_retry_count] = 0
-        raise "MultipleMan::ConnectionError"
+        raise ConnectionError, e
       end
     end
 
@@ -29,6 +29,7 @@ module MultipleMan
       Thread.current.thread_variable_get(:multiple_man_current_channel) || begin
         channel = connection.create_channel
         channel_gc.push(channel)
+        channel.confirm_select if MultipleMan.configuration.publisher_confirms
         Thread.current.thread_variable_set(:multiple_man_current_channel, channel)
 
         channel

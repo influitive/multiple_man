@@ -20,7 +20,8 @@ module MultipleMan
         end
       end
     rescue Exception => ex
-      MultipleMan.error(ex)
+      err = ProducerError.new(reason: ex, payload: records.inspect)
+      MultipleMan.error(err, reraise: false)
     end
 
   private
@@ -45,6 +46,5 @@ module MultipleMan
         yield records
       end
     end
-
   end
 end
