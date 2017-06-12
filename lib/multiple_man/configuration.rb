@@ -11,7 +11,8 @@ module MultipleMan
     attr_reader :subscriber_registry
     attr_accessor :topic_name, :app_name, :connection, :enabled, :error_handler,
                   :worker_concurrency, :reraise_errors, :connection_recovery,
-                  :queue_name, :prefetch_size, :bunny_opts, :exchange_opts
+                  :queue_name, :prefetch_size, :bunny_opts, :exchange_opts,
+                  :publisher_confirms
 
     attr_writer :logger
 
@@ -29,6 +30,7 @@ module MultipleMan
       }
       self.bunny_opts = {}
       self.exchange_opts = {}
+      self.publisher_confirms = false
 
       @subscriber_registry = Subscribers::Registry.new
     end

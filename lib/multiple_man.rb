@@ -4,6 +4,8 @@ require 'active_support'
 module MultipleMan
   Error = Class.new(StandardError)
   ConsumerError = Class.new(Error)
+  ProducerError = Class.new(Error)
+  ConnectionError = Class.new(Error)
 
   require 'multiple_man/railtie' if defined?(Rails)
 
