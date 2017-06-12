@@ -20,7 +20,8 @@ module MultipleMan
         end
       end
     rescue Exception => ex
-      MultipleMan.error(ex)
+      err = ProducerError.new(reason: ex, payload: records.inspect)
+      MultipleMan.error(err, reraise: false)
     end
 
   private
@@ -34,6 +35,8 @@ module MultipleMan
       MultipleMan.logger.debug("  Record Data: #{data} | Routing Key: #{routing_key}")
 
       connection.topic.publish(data.payload, routing_key: routing_key)
+
+      publish_confirmed?(connection, data) if MultipleMan.configuration.publisher_confirms
     end
 
     def all_records(records, &block)
@@ -46,5 +49,11 @@ module MultipleMan
       end
     end
 
+    def publish_confirmed?(connection, data)
+      return true if connection.topic.wait_for_confirms
+
+      err = ProducerError.new(reason: 'wait_for_confirms', payload: data.payload)
+      MultipleMan.error(err, reraise: false)
+    end
   end
 end
