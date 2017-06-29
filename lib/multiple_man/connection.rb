@@ -28,7 +28,6 @@ module MultipleMan
     def self.channel
       Thread.current.thread_variable_get(:multiple_man_current_channel) || begin
         channel = connection.create_channel
-        channel_gc.push(channel)
         Thread.current.thread_variable_set(:multiple_man_current_channel, channel)
 
         channel
@@ -55,19 +54,10 @@ module MultipleMan
       end
     end
 
-    def self.channel_gc
-      @channel_gc ||= ChannelMaintenance::GC.new(
-        MultipleMan.configuration,
-        ChannelMaintenance::Reaper.new(MultipleMan.configuration))
-    end
-
     def self.reset!
       @mutex.synchronize do
         @connection.close if @connection
         @connection = nil
-
-        @channel_gc.stop if @channel_gc
-        @channel_gc = nil
       end
     end
 
