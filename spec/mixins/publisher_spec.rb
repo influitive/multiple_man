@@ -8,6 +8,9 @@ describe MultipleMan::Publisher do
       def after_commit(subscriber)
         self.subscriber = subscriber
       end
+
+      def after_touch
+      end
     end
 
     include MultipleMan::Publisher

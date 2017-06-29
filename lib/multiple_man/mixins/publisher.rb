@@ -12,6 +12,7 @@ module MultipleMan
           end
         end
         base.after_commit(on: :destroy) { |r| r.multiple_man_publish(:destroy) }
+        base.after_touch { |r| r.multiple_man_publish(:update) }
       end
 
       base.class_attribute :multiple_man_publisher
