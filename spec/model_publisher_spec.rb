@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MultipleMan::ModelPublisher do 
+describe MultipleMan::ModelPublisher do
   let(:channel_stub) { double(Bunny::Channel, topic: topic_stub)}
   let(:topic_stub) { double(Bunny::Exchange, publish: nil) }
 
@@ -35,10 +35,17 @@ describe MultipleMan::ModelPublisher do
     end
 
     it "should call the error handler on error" do
-      ex = Exception.new("Bad stuff happened")
+      records    = MockObject.new
+      mock_error = MultipleMan::ProducerError.new
+      ex         = Exception.new("Bad stuff happened")
+
       topic_stub.stub(:publish) { raise ex }
-      MultipleMan.should_receive(:error).with(ex)
-      described_class.new(fields: [:foo]).publish(MockObject.new)
+      MultipleMan.should_receive(:error).with(mock_error, reraise: false)
+      MultipleMan::ProducerError.should_receive(
+        :new
+      ).with(reason: ex, payload: records.inspect).and_return(mock_error)
+
+      described_class.new(fields: [:foo]).publish(records)
     end
   end
 
@@ -59,5 +66,4 @@ describe MultipleMan::ModelPublisher do
       subject.publish(obj)
     end
   end
-
 end
