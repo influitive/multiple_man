@@ -36,7 +36,7 @@ module MultipleMan
 
       connection.topic.publish(data.payload, routing_key: routing_key)
 
-      publish_confirmed?(connection, data) if MultipleMan.configuration.publisher_confirms
+      # publish_confirmed?(connection, data) if MultipleMan.configuration.publisher_confirms
     end
 
     def all_records(records, &block)
