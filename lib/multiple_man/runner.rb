@@ -13,6 +13,7 @@ module MultipleMan
     end
 
     def run
+      trap_signals!
       preload_framework!
       channel.prefetch(prefetch_size)
       build_listener.listen
@@ -23,6 +24,18 @@ module MultipleMan
     attr_reader :mode
 
     def_delegators :config, :prefetch_size, :queue_name, :listeners, :topic_name
+
+    def trap_signals!
+      handler = proc do |signal|
+        puts "received #{Signal.signame(signal)}"
+        channel.close
+        connection.close
+
+        exit
+      end
+
+      %w(INT QUIT TERM).each { |signal| Signal.trap(signal, handler) }
+    end
 
     def preload_framework!
       Rails.application.eager_load! if defined?(Rails)
@@ -61,7 +74,11 @@ module MultipleMan
     end
 
     def channel
-      @channel ||= Connection.connection.create_channel
+      @channel ||= connection.create_channel
+    end
+
+    def connection
+      Connection.connection
     end
 
     def config
