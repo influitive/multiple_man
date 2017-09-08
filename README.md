@@ -17,7 +17,9 @@ It's heavily inspired by Promiscuous, but differs in a few ways:
 
 Add this line to your application's Gemfile:
 
-    gem 'multiple_man'
+```ruby
+gem 'multiple_man'
+```
 
 And then execute:
 
@@ -34,39 +36,41 @@ Or install it yourself as:
 MultipleMan can be configured (ideally inside an initializer) by
 calling MultipleMan.configure like so:
 
-    MultipleMan.configure do |config|
-      # A connection string to your local server. Defaults to localhost.
-      config.connection = "amqp://example.com"
+```ruby
+MultipleMan.configure do |config|
+  # A connection string to your local server. Defaults to localhost.
+  config.connection = "amqp://example.com"
 
-      # The topic name to push to. If you have multiple
-      # multiple man apps, this should be unique per application. Publishers
-      # and subscribers should always use the same topic.
-      config.topic_name = "multiple_man"
+  # The topic name to push to. If you have multiple
+  # multiple man apps, this should be unique per application. Publishers
+  # and subscribers should always use the same topic.
+  config.topic_name = "multiple_man"
 
-      # The application name (used for subscribers) - defaults to your
-      # Rails application name if you're using rails
-      config.app_name = "MyApp"
+  # The application name (used for subscribers) - defaults to your
+  # Rails application name if you're using rails
+  config.app_name = "MyApp"
 
-      # Specify what should happen when MultipleMan
-      # encounters an exception.
-      config.on_error do |exception|
-        ErrorLogger.log(exception)
-      end
+  # Specify what should happen when MultipleMan
+  # encounters an exception.
+  config.on_error do |exception|
+    ErrorLogger.log(exception)
+  end
 
-      # Add opts that go directly to the bunny constructor (Advanced)
-      config.bunny_opts = {
-        tls_ca_certificates: ['/usr/lib/ssl/certs/cacert.pem']
-      }
+  # Add opts that go directly to the bunny constructor (Advanced)
+  config.bunny_opts = {
+    tls_ca_certificates: ['/usr/lib/ssl/certs/cacert.pem']
+  }
 
-      # Add opts that are used when creating the exchange
-      config.exchange_opts = {
-        durable: true
-      }
+  # Add opts that are used when creating the exchange
+  config.exchange_opts = {
+    durable: true
+  }
 
-      # Where you want to log errors to. Should be an instance of Logger
-      # Defaults to the Rails logger (for Rails) or STDOUT otherwise.
-      config.logger = Logger.new(STDOUT)
-    end
+  # Where you want to log errors to. Should be an instance of Logger
+  # Defaults to the Rails logger (for Rails) or STDOUT otherwise.
+  config.logger = Logger.new(STDOUT)
+end
+```
 
 ### A note on errors
 
@@ -85,16 +89,18 @@ cause will be preserved in Exception#cause.
 
 Include this in your model definition:
 
-    class Widget < ActiveRecord::Base
-      include MultipleMan::Publisher
-      publish fields: [:id, :name, :type]
-    end
+```ruby
+class Widget < ActiveRecord::Base
+  include MultipleMan::Publisher
+  publish fields: [:id, :name, :type]
+end
+```
 
 #### In an initializer / config file
 
 Add this to an initializer (i.e. `multiple_man.rb`):
 
-```
+```ruby
 MultipleMan.publish Widget, fields: [:id, :name, :type]
 ```
 
@@ -120,7 +126,7 @@ You can use the following options when publishing:
 
 By default, MultipleMan will publish all of your models whenever you save a model (in an `after_commit` hook). If you need to manually publish models, you can do so with the `multiple_man_publish` method, which acts like a scope on your models, like so:
 
-```
+```ruby
 # Publish all widgets to MultipleMan
 Widget.multiple_man_publish
 
@@ -138,10 +144,12 @@ version of multiple_man_publish that operates on a collection. By calling the in
 
 You can subscribe to a model as follows (in a seperate consumer app):
 
-    class Widget < ActiveRecord::Base
-      include MultipleMan::Subscriber
-      subscribe fields: [:id, :name]
-    end
+```ruby
+class Widget < ActiveRecord::Base
+  include MultipleMan::Subscriber
+  subscribe fields: [:id, :name]
+end
+```
 
 You can pass the following options to the `subscribe` call:
 
@@ -159,7 +167,7 @@ If your publisher specifies an `identifier` option, you *must* include a column 
 If you want to do something other than populate a model on MultipleMan messages,
 you can listen for messages and process them however you'd like:
 
-```
+```ruby
 def ListenerClass
   include MultipleMan::Listener
   listen_to 'ModelName'
@@ -189,7 +197,7 @@ rake multiple_man:seed
 
 2. On the publisher side, indicate that your models should be seeded with the following command:
 
-```
+```ruby
 MyModel.multiple_man_publish(:seed)
 ```
 
