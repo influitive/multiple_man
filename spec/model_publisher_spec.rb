@@ -2,10 +2,12 @@ require 'spec_helper'
 
 describe MultipleMan::ModelPublisher do
   let(:channel_stub) { double(Bunny::Channel, topic: topic_stub)}
+  let(:pool_stub) { double(ConnectionPool) }
   let(:topic_stub) { double(Bunny::Exchange, publish: nil) }
 
   before {
-    MultipleMan::Connection.stub(:connect).and_yield(channel_stub)
+    MultipleMan::Connection.stub(:channel_pool).and_return(pool_stub)
+    pool_stub.stub(:with).and_yield(channel_stub)
     MultipleMan.configure do |config|
       config.topic_name = "app"
     end

@@ -16,10 +16,9 @@ module MultipleMan
     def run
       trap_signals!
       preload_framework!
-      channel.prefetch(prefetch_size)
       build_listener.listen
     rescue ShutDown
-      connection.close
+      Connection.close
     end
 
     private
@@ -51,11 +50,14 @@ module MultipleMan
     end
 
     def build_listener
-      listener_class.new(
-        queue: channel.queue(*queue_params),
-        subscribers: listeners,
-        topic: topic_name
-      )
+      MultipleMan::Connection.channel_pool.with do |channel|
+        channel.prefetch(prefetch_size)
+        listener_class.new(
+          queue: channel.queue(*queue_params),
+          subscribers: listeners,
+          topic: topic_name
+        )
+      end
     end
 
     def listener_class
@@ -72,14 +74,6 @@ module MultipleMan
       else
         [queue_name, durable: true, auto_delete: false]
       end
-    end
-
-    def channel
-      @channel ||= connection.create_channel
-    end
-
-    def connection
-      Connection.connection
     end
 
     def config

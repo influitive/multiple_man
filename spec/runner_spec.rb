@@ -4,9 +4,11 @@ describe MultipleMan::Runner do
   let(:mock_channel) { double("Channel", prefetch: true, queue: true) }
   let(:mock_connection) { double("Connection", create_channel: mock_channel) }
   let(:mock_consumer) { double("Consumer", listen: true) }
+  let(:pool_stub) { double(ConnectionPool) }
 
   it 'boots app and listens on new channel' do
-    expect(MultipleMan::Connection).to receive(:connection).and_return(mock_connection)
+    MultipleMan::Connection.stub(:channel_pool).and_return(pool_stub)
+    pool_stub.stub(:with).and_yield(mock_channel)
     expect(MultipleMan::Consumers::General).to receive(:new).and_return(mock_consumer)
     expect(mock_consumer).to receive(:listen)
 
@@ -15,12 +17,10 @@ describe MultipleMan::Runner do
   end
 
   context "shutdown" do
-    let(:connection) { MultipleMan::Connection.connection }
-
     it 'closes connections and exits gracefully' do
       MultipleMan::Consumers::General.stub(:new) { Process.kill('INT', 0) }
 
-      expect(connection).to receive(:close)
+      expect(MultipleMan::Connection).to receive(:close)
 
       MultipleMan::Runner.new.run
     end

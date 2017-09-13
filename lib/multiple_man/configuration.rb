@@ -12,7 +12,7 @@ module MultipleMan
     attr_accessor :topic_name, :app_name, :connection, :enabled, :error_handler,
                   :worker_concurrency, :reraise_errors, :connection_recovery,
                   :queue_name, :prefetch_size, :bunny_opts, :exchange_opts,
-                  :publisher_confirms
+                  :publisher_confirms, :channel_pool_size
 
     attr_writer :logger, :tracer
 
@@ -21,6 +21,7 @@ module MultipleMan
       self.app_name = Rails.application.class.parent.to_s if defined?(Rails)
       self.enabled = true
       self.worker_concurrency = 1
+      self.channel_pool_size = 5
       self.reraise_errors = true
       self.prefetch_size = 100
       self.connection_recovery = {

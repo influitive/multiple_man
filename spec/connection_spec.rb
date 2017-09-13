@@ -1,22 +1,31 @@
 require 'spec_helper'
 
 describe MultipleMan::Connection do
+  let(:opts) { { durable: true, another: 'opt' } }
 
-  let(:mock_bunny) { double(Bunny, open?: true, close: nil) }
-  let(:mock_channel) { double(Bunny::Channel, close: nil, open?: true, topic: nil, number: 1) }
-
-  after do
-    Thread.current.thread_variable_set(:multiple_man_current_channel, nil)
-    MultipleMan::Connection.reset!
+  before do
+    MultipleMan.configuration.exchange_opts = opts
   end
 
-  it "should open a connection and a channel with opts" do
-    MultipleMan.configuration.exchange_opts = {durable: true, another: 'opt'}
+  it '#channel_pool configures pool' do
+    expect_any_instance_of(Bunny::Channel).to receive(:topic).with('multiple_man', opts)
+    channel_pool = MultipleMan::Connection.channel_pool
 
-    MultipleMan::Connection.should_receive(:connection).and_return(mock_bunny)
-    mock_bunny.should_receive(:create_channel).once.and_return(mock_channel)
-    expect(mock_channel).to receive(:topic).with(MultipleMan.configuration.topic_name, durable: true, another: 'opt')
+    channel_pool.with do |ch|
+      expect(ch.class).to eq(Bunny::Channel)
+    end
+  end
 
-    described_class.connect { }
+  it '#close closes connection and allows new channel_pool' do
+    expect_any_instance_of(Bunny::Session).to receive(:close)
+
+    channel_pool = MultipleMan::Connection.channel_pool
+    channel_pool.with { |_| puts 'pool is lazy loaded' }
+    MultipleMan::Connection.close
+
+    expect(Bunny).to receive(:new).and_call_original
+
+    channel_pool = MultipleMan::Connection.channel_pool
+    channel_pool.with { |_| puts 'pool is lazy loaded' }
   end
 end
