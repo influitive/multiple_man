@@ -15,26 +15,14 @@ describe MultipleMan::Runner do
   end
 
   context "shutdown" do
-    let(:mock_consumer) { double("Consumer", listen: ->(_){ sleep(1); raise "no interrupt!" }) }
+    let(:connection) { MultipleMan::Connection.connection }
 
-    xit 'closes connections and exits gracefully' do
-      ps = fork do
-        expect(MultipleMan::Connection).to receive(:connection).and_return(mock_connection)
-        expect(MultipleMan::Consumers::General).to receive(:new).and_return(mock_consumer)
+    it 'closes connections and exits gracefully' do
+      MultipleMan::Consumers::General.stub(:new) { Process.kill('INT', 0) }
 
-        expect(mock_channel).to receive(:close)
-        expect(mock_connection).to receive(:close)
+      expect(connection).to receive(:close)
 
-        described_class.new(mode: :general).run
-      end
-
-      sleep 0.01
-
-      Process.kill('INT', ps)
-      a, status = Process.waitpid2(ps)
-      # binding.pry
-
-      expect(status.success?).to be true
+      MultipleMan::Runner.new.run
     end
   end
 end

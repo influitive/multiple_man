@@ -2,6 +2,7 @@ require 'forwardable'
 
 module MultipleMan
   class Runner
+    class ShutDown < Error; end
     extend Forwardable
 
     MODES = [:general, :seed].freeze
@@ -17,6 +18,8 @@ module MultipleMan
       preload_framework!
       channel.prefetch(prefetch_size)
       build_listener.listen
+    rescue ShutDown
+      connection.close
     end
 
     private
@@ -28,10 +31,8 @@ module MultipleMan
     def trap_signals!
       handler = proc do |signal|
         puts "received #{Signal.signame(signal)}"
-        channel.close
-        connection.close
 
-        exit
+        raise ShutDown
       end
 
       %w(INT QUIT TERM).each { |signal| Signal.trap(signal, handler) }
