@@ -32,9 +32,8 @@ module MultipleMan
         end
       end
 
-      def receive(delivery_info, _, message)
-        method = operation(message, delivery_info.routing_key)
-        dispatch_subscribers(message, method, delivery_info.routing_key)
+      def receive(delivery_info, meta_data, message)
+        dispatch_subscribers(delivery_info, meta_data, message)
         queue.channel.acknowledge(delivery_info.delivery_tag, false)
 
         MultipleMan.logger.debug "Successfully processed! #{delivery_info.routing_key}"
@@ -48,12 +47,13 @@ module MultipleMan
         end
       end
 
-      def dispatch_subscribers(message, method, routing_key)
-        subscribers.select { |k,s| k.match(routing_key) }
-          .values
-          .each do |s|
-            s.send(method, message)
-          end
+      def dispatch_subscribers(delivery_info, meta_data, message)
+        method = operation(message, delivery_info.routing_key)
+
+        subscribers.select { |k,s| k.match(delivery_info.routing_key) }.values.each do |s|
+          tracer = MultipleMan.configuration.tracer.new(s)
+          tracer.handle(delivery_info, meta_data, message, method)
+        end
       end
 
       def operation(message, routing_key)
