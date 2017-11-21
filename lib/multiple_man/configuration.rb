@@ -14,7 +14,7 @@ module MultipleMan
                   :queue_name, :prefetch_size, :bunny_opts, :exchange_opts,
                   :publisher_confirms
 
-    attr_writer :logger
+    attr_writer :logger, :tracer
 
     def initialize
       self.topic_name = "multiple_man"
@@ -41,6 +41,10 @@ module MultipleMan
 
     def logger
       @logger ||= defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
+    end
+
+    def tracer
+      @tracer ||= ::MultipleMan::Tracers::NullTracer
     end
 
     def on_error(&block)
