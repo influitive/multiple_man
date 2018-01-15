@@ -23,7 +23,6 @@ module MultipleMan
   require 'multiple_man/connection'
   require 'multiple_man/routing_key'
   require 'multiple_man/consumers/general'
-  require 'multiple_man/consumers/transitional'
   require 'multiple_man/consumers/seed'
   require 'multiple_man/model_populator'
   require 'multiple_man/identity'
