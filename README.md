@@ -1,7 +1,5 @@
 # MultipleMan
 
-[![CircleCI](https://circleci.com/gh/influitive/multiple_man.png)](https://circleci.com/gh/influitive/multiple_man)
-
 MultipleMan synchronizes your ActiveRecord models between Rails
 apps, using RabbitMQ to send messages between your applications.
 It's heavily inspired by Promiscuous, but differs in a few ways:
@@ -9,9 +7,6 @@ It's heavily inspired by Promiscuous, but differs in a few ways:
 - MultipleMan makes a hard assumption that you're using
   ActiveRecord for your models. This simplifies how models
   are sychronized, which offers a few benefits like:
-- Transactions are fully supported in MultipleMan. Records
-  which aren't committed fully to the database won't be sent
-  to your message queue.
 
 ## Installation
 
@@ -21,13 +16,30 @@ Add this line to your application's Gemfile:
 gem 'multiple_man'
 ```
 
-And then execute:
+Multiple Man supports two messaging modes "at most once" and "at least once".
 
-    $ bundle
+### To enable at least once messaging
+This mode will push messages into an outbox table in your database with an
+`after_save` hook then publish those out to RabbitMQ in a separate process. Run
+the migrations to set up the table with:
 
-Or install it yourself as:
+```shell
+bundle exec multiple_man_db_migrate postgresql://postgres:pw@postgres/my_app
+```
 
-    $ gem install multiple_man
+and set these config variables:
+```ruby
+config.db_url         = 'postgresql://postgres:pw@postgres/my_app'
+config.messaging_mode = :at_least_once
+```
+
+Run the publishing process with
+```shell
+bundle exec rake multiple_man:producer
+```
+
+The database *must* be the same one your application is writing to.
+
 
 ## Usage
 
@@ -234,6 +246,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/influitive/multiple_man/trend.png)](https://bitdeli.com/free "Bitdeli Badge")

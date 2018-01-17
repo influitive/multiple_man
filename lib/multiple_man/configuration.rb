@@ -12,7 +12,7 @@ module MultipleMan
     attr_accessor :topic_name, :app_name, :connection, :enabled, :error_handler,
                   :worker_concurrency, :reraise_errors, :connection_recovery,
                   :queue_name, :prefetch_size, :bunny_opts, :exchange_opts,
-                  :publisher_confirms
+                  :publisher_confirms, :messaging_mode, :db_url, :alpha_topic_name
 
     attr_writer :logger, :tracer
 
@@ -31,8 +31,18 @@ module MultipleMan
       self.bunny_opts = {}
       self.exchange_opts = {}
       self.publisher_confirms = false
+      self.messaging_mode = :at_most_once
+      self.db_url = nil
 
       @subscriber_registry = Subscribers::Registry.new
+    end
+
+    def at_least_once?
+      [:at_least_once, :outbox_alpha].include?(@messaging_mode)
+    end
+
+    def outbox_alpha?
+      [:outbox_alpha].include?(@messaging_mode)
     end
 
     def queue_name

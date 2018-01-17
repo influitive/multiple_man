@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+require 'uri'
+require "multiple_man"
+require 'multiple_man/outbox/db'
+
+db_url = ARGV[0]
+
+fail "provide a valid database url: #{db_url}" unless db_url && db_url =~ URI.regexp
+
+MultipleMan::Outbox::DB.run_migrations(db_url: db_url)
+
+puts "migrated successfully: #{db_url}"
