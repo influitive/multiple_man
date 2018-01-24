@@ -2,16 +2,17 @@ module MultipleMan
   class RoutingKey
     ALLOWED_OPERATIONS = [:create, :update, :destroy, :seed, :"#"]
 
-    def initialize(klass, operation = :"#")
+    def initialize(klass, operation = :"#", topic_name: default_topic_name)
       self.klass = klass
       self.operation = operation
+      @topic_name = topic_name
     end
 
     def to_s
       if operation.to_sym == :seed
-        "#{topic_name}.#{operation}.#{klass}"
+        "#{@topic_name}.#{operation}.#{klass}"
       else
-        "#{topic_name}.#{klass}.#{operation}"
+        "#{@topic_name}.#{klass}.#{operation}"
       end
     end
 
@@ -23,10 +24,14 @@ module MultipleMan
       @operation = value
     end
 
-  private
-    def topic_name
-      MultipleMan.configuration.topic_name
+    def self.ordering_key(routing_key)
+      routing_key.split('.')[1]
     end
 
+    private
+
+    def default_topic_name
+      MultipleMan.configuration.topic_name
+    end
   end
 end

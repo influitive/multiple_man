@@ -29,11 +29,16 @@ module MultipleMan
       Thread.current.thread_variable_get(:multiple_man_current_channel) || begin
         channel = connection.create_channel
         channel_gc.push(channel)
-        channel.confirm_select if MultipleMan.configuration.publisher_confirms
+        channel.confirm_select if confirm_select?
         Thread.current.thread_variable_set(:multiple_man_current_channel, channel)
 
         channel
       end
+    end
+
+    def self.confirm_select?
+      config = MultipleMan.configuration
+      config.publisher_confirms || config.at_least_once?
     end
 
     def self.connection
@@ -73,6 +78,7 @@ module MultipleMan
     end
 
     attr_reader :topic
+    attr_accessor :channel
     delegate :queue, to: :channel
 
     def initialize(channel)
@@ -84,9 +90,8 @@ module MultipleMan
       MultipleMan.configuration.topic_name
     end
 
-  private
+    private
 
-    attr_accessor :channel
     attr_writer :topic
 
   end
