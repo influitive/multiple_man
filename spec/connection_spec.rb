@@ -16,6 +16,7 @@ describe MultipleMan::Connection do
     MultipleMan::Connection.should_receive(:connection).and_return(mock_bunny)
     mock_bunny.should_receive(:create_channel).once.and_return(mock_channel)
     expect(mock_channel).to receive(:topic).with(MultipleMan.configuration.topic_name, durable: true, another: 'opt')
+    expect(mock_channel).to receive(:confirm_select)
 
     described_class.connect { }
   end
