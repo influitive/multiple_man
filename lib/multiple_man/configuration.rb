@@ -12,7 +12,7 @@ module MultipleMan
     attr_accessor :topic_name, :app_name, :connection, :enabled, :error_handler,
                   :worker_concurrency, :reraise_errors, :connection_recovery,
                   :queue_name, :prefetch_size, :bunny_opts, :exchange_opts,
-                  :publisher_confirms, :messaging_mode, :db_url, :alpha_topic_name
+                  :publisher_confirms, :messaging_mode, :db_url
 
     attr_writer :logger, :tracer
 
@@ -59,6 +59,14 @@ module MultipleMan
 
     def register_listener(listener)
       subscriber_registry.register(listener)
+    end
+
+    def at_least_once?
+      [:outbox_alpha, :at_least_once].include?(messaging_mode)
+    end
+
+    def outbox_alpha?
+      [:outbox_alpha].include?(messaging_mode)
     end
   end
 end

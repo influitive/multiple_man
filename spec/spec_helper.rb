@@ -20,6 +20,22 @@ def setup_db
   require 'multiple_man/outbox/db'
 
   db.run_migrations
+  db.connection.execute <<~SQL
+    CREATE TABLE mm_test_users (
+      id         BIGSERIAL PRIMARY KEY,
+      name       varchar(255),
+      created_at TIMESTAMP default NOW(),
+      updated_at TIMESTAMP default NOW()
+    )
+  SQL
+end
+
+def setup_rails
+  require 'rails'
+  require 'active_record'
+
+  conn = { adapter: "postgresql", database: "postgres" }
+  ActiveRecord::Base.establish_connection(conn)
 end
 
 def create_messages(count)
@@ -31,9 +47,11 @@ def create_messages(count)
   end
 end
 
-def routing_keys
-  listener_klasses = 3.times.map { |i| "User#{i}" }
+def listener_klasses
+  @routing_key ||= 3.times.map { |i| "User#{i}" }
+end
 
+def routing_keys
   @routing_key ||= listener_klasses.map do |klass|
     "multiple_man.#{klass}.create"
   end
@@ -57,4 +75,17 @@ end
 def clear_db
   db.connection.drop_table :multiple_man_schema_info
   db.connection.drop_table :multiple_man_messages
+  db.connection.drop_table :mm_test_users
+end
+
+def wait_for(&block)
+  max_wait      = 5
+  total_wait    = 0
+  wait_interval = 0.2
+  while !yield && total_wait < max_wait
+    total_wait += wait_interval
+    sleep wait_interval
+  end
+
+  raise if total_wait > max_wait
 end

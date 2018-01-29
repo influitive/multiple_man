@@ -29,6 +29,8 @@ module MultipleMan
   require 'multiple_man/publish'
   require 'multiple_man/runner'
   require 'multiple_man/cli'
+  require 'multiple_man/outbox/message_adapter'
+  require 'multiple_man/outbox/outbox'
 
   require 'multiple_man/channel_maintenance/gc'
   require 'multiple_man/channel_maintenance/reaper'
