@@ -30,7 +30,9 @@ describe MultipleMan::Publisher do
     it "should tell ModelPublisher to publish" do
       my_mock = MockClass.new
       mock_publisher = double(MultipleMan::ModelPublisher)
-      MultipleMan::ModelPublisher.any_instance.should_receive(:publish).with(my_mock, :create)
+      MultipleMan::ModelPublisher.any_instance
+                                 .should_receive(:publish)
+                                 .with(my_mock, :create, { outbox: false })
       my_mock.save
     end
   end

@@ -5,7 +5,7 @@ module MultipleMan
     class ShutDown < Error; end
     extend Forwardable
 
-    MODES = [:general, :seed].freeze
+    MODES = [:produce, :general, :seed].freeze
 
     def initialize(options = {})
       @mode = options.fetch(:mode, :general)
@@ -20,6 +20,11 @@ module MultipleMan
       build_listener.listen
     rescue ShutDown
       connection.close
+    end
+
+    def run_producer
+      preload_framework!
+      Producers::General.new.run_producer
     end
 
     private

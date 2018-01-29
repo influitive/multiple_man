@@ -5,16 +5,21 @@ module MultipleMan
 
     def initialize(options = {})
       self.options = options.with_indifferent_access
+      @message_publisher = Outbox::MessageAdapter.adapter if MultipleMan.configuration.at_least_once?
     end
 
-    def publish(records, operation=:create)
+    def publish(records, operation = :create, outbox: false)
       return unless MultipleMan.configuration.enabled
 
       Connection.connect do |connection|
         ActiveSupport::Notifications.instrument('multiple_man.publish_messages') do
           all_records(records) do |record|
             ActiveSupport::Notifications.instrument('multiple_man.publish_message') do
-              push_record(connection, record, operation)
+              if outbox && @message_publisher
+                @message_publisher.push_record(record, operation, options)
+              else
+                push_record(connection, record, operation)
+              end
             end
           end
         end
@@ -24,7 +29,7 @@ module MultipleMan
       MultipleMan.error(err, reraise: false)
     end
 
-  private
+    private
 
     attr_accessor :options
 
