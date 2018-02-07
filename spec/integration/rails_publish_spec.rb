@@ -37,7 +37,7 @@ describe "publishing at least once" do
       expect(MMTestUser.count).to eq(1)
       expect(MultipleMan::Outbox.count).to eq(1)
 
-      outbox_message = MultipleMan::Outbox::Adapter::Rails.last
+      outbox_message = MultipleMan::Outbox::Message::Rails.last
       payload        = JSON.parse(outbox_message.payload)
       expect(payload).to eq(expeted_payload)
     end
@@ -51,7 +51,7 @@ describe "publishing at least once" do
       expect(MMTestUser.count).to eq(0)
       expect(MultipleMan::Outbox.count).to eq(3)
 
-      payloads = MultipleMan::Outbox::Adapter::Rails.pluck(:payload)
+      payloads = MultipleMan::Outbox::Message::Rails.pluck(:payload)
       payloads = payloads.map { |pl| JSON.parse(pl) }
 
       operations = payloads.map { |pl| pl['operation'] }
@@ -59,7 +59,7 @@ describe "publishing at least once" do
     end
 
     it 'guarantees publishing within a transaction' do
-      expect(MultipleMan::Outbox::Adapter::Rails)
+      expect(MultipleMan::Outbox::Message::Rails)
         .to receive(:push_record).and_raise(MultipleMan::ProducerError)
 
         expect {
@@ -131,7 +131,7 @@ describe "publishing at least once" do
 
       expect(MMTestUser.count).to eq(1)
 
-      routing_key = MultipleMan::Outbox::Adapter::Rails.last.routing_key
+      routing_key = MultipleMan::Outbox::Message::Rails.last.routing_key
       expect(routing_key).to eq('multiple_man.MMTestUser.create')
     end
   end
