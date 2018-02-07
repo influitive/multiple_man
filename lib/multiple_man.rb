@@ -29,6 +29,7 @@ module MultipleMan
   require 'multiple_man/publish'
   require 'multiple_man/runner'
   require 'multiple_man/cli'
+  require 'multiple_man/producers/general'
   require 'multiple_man/outbox/message_adapter'
   require 'multiple_man/outbox/outbox'
 

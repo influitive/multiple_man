@@ -24,6 +24,10 @@ module MultipleMan
       @operation = value
     end
 
+    def self.model_name(routing_key)
+      routing_key.split('.')[1]
+    end
+
     private
 
     def default_topic_name

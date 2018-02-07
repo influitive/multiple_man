@@ -54,6 +54,13 @@ describe MultipleMan::RoutingKey do
         expect { rk.operation = op }.to raise_error
       end
     end
+  end
 
+  describe "model name" do
+    it 'returns model name' do
+      routing_key = 'multiple_man.User.Create'
+
+      expect('User').to eq(MultipleMan::RoutingKey.model_name(routing_key))
+    end
   end
 end

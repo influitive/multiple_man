@@ -1,6 +1,6 @@
 module MultipleMan
   module Outbox
-    module Adapter
+    module Message
       class Rails < ::ActiveRecord::Base
         self.table_name = 'public.multiple_man_messages'
 

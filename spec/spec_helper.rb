@@ -39,11 +39,11 @@ def setup_rails
 end
 
 def create_messages(count)
-  require_relative '../lib/multiple_man/outbox/adapters/general'
+  require_relative '../lib/multiple_man/outbox/message/sequel'
 
   count.times do |i|
     message = sample_message(i)
-    MultipleMan::Outbox::Adapters::General.insert(message)
+    MultipleMan::Outbox::Message::Sequel.insert(message)
   end
 end
 
