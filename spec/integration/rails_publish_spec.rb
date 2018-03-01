@@ -42,6 +42,14 @@ describe "publishing at least once" do
       expect(payload).to eq(expeted_payload)
     end
 
+    it 'publishes payload when calling multiple_man_publish directly' do
+      user = MMTestUser.create!(name: name)
+      expect(MultipleMan::Outbox.count).to eq(1)
+
+      expect{user.multiple_man_publish}
+        .to change{MultipleMan::Outbox.count}.by(1)
+    end
+
     it 'publishes payload for CUD' do
       user = MMTestUser.create!(name: name)
       user.name = SecureRandom.uuid
@@ -100,6 +108,14 @@ describe "publishing at least once" do
 
       expect(MMTestUser.count).to eq(1)
     end
+
+    it 'publishes to outbox when calling multiple_man_publish directly' do
+      user = MMTestUser.create!(name: 'name')
+      expect(MultipleMan::Outbox.count).to eq(0)
+
+      expect{user.multiple_man_publish}
+        .to change{MultipleMan::Outbox.count}.by(0)
+    end
   end
 
   context 'outbox alpha' do
@@ -133,6 +149,14 @@ describe "publishing at least once" do
 
       routing_key = MultipleMan::Outbox::Message::Rails.last.routing_key
       expect(routing_key).to eq('multiple_man.MMTestUser.create')
+    end
+
+    it 'publishes payload when calling multiple_man_publish directly' do
+      user = MMTestUser.create!(name: 'name')
+      expect(MultipleMan::Outbox.count).to eq(1)
+
+      expect{user.multiple_man_publish}
+        .to change{MultipleMan::Outbox.count}.by(1)
     end
   end
 end
