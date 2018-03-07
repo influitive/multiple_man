@@ -54,6 +54,10 @@ module MultipleMan
       if base.respond_to?(:after_create)
         base.after_create { |r| r.multiple_man_publish_outbox_true(:create) }
       end
+
+      if base.respond_to?(:after_touch)
+        base.after_touch { |r| r.multiple_man_publish_outbox_true(:update) }
+      end
     end
 
     def self.add_post_commit_hooks(base)

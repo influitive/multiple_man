@@ -42,6 +42,14 @@ describe "publishing at least once" do
       expect(payload).to eq(expeted_payload)
     end
 
+    it 'publishes after touch' do
+      user = MMTestUser.create!(name: name)
+      expect(MultipleMan::Outbox.count).to eq(1)
+
+      user.touch
+      expect(MultipleMan::Outbox.count).to eq(2)
+    end
+
     it 'publishes payload when calling multiple_man_publish directly' do
       user = MMTestUser.create!(name: name)
       expect(MultipleMan::Outbox.count).to eq(1)
