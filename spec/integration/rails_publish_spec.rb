@@ -50,6 +50,14 @@ describe "publishing at least once" do
       expect(MultipleMan::Outbox.count).to eq(2)
     end
 
+    it 'publishes always publishes on update' do
+      user = MMTestUser.create!(name: name)
+      expect(MultipleMan::Outbox.count).to eq(1)
+
+      user.save
+      expect(MultipleMan::Outbox.count).to eq(2)
+    end
+
     it 'publishes payload when calling multiple_man_publish directly' do
       user = MMTestUser.create!(name: name)
       expect(MultipleMan::Outbox.count).to eq(1)
