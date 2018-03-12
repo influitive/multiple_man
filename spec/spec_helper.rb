@@ -28,6 +28,16 @@ def setup_db
       updated_at TIMESTAMP default NOW()
     )
   SQL
+
+  db.connection.execute <<~SQL
+    CREATE TABLE mm_test_profiles (
+      id              BIGSERIAL PRIMARY KEY,
+      mm_test_user_id BIGSERIAL,
+      name            varchar(255),
+      created_at      TIMESTAMP default NOW(),
+      updated_at      TIMESTAMP default NOW()
+    )
+  SQL
 end
 
 def setup_rails
@@ -76,6 +86,7 @@ def clear_db
   db.connection.drop_table :multiple_man_schema_info
   db.connection.drop_table :multiple_man_messages
   db.connection.drop_table :mm_test_users
+  db.connection.drop_table :mm_test_profiles
 end
 
 def wait_for(&block)
