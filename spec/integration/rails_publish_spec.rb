@@ -8,10 +8,25 @@ describe "publishing at least once" do
       setup_db
       setup_rails
 
+      class MMTestProfile < ::ActiveRecord::Base
+        belongs_to :mm_test_user
+
+        alias_attribute :profile_name, :name
+        alias_attribute :profile_id, :id
+      end
+
       class MMTestUser < ::ActiveRecord::Base
         include MultipleMan::Publisher
 
-        publish fields: [:name]
+        has_one :mm_test_profile,
+          class_name: MMTestProfile.name,
+          autosave: true
+
+        delegate :profile_name, :profile_id,
+          to: :mm_test_profile,
+          :allow_nil => true
+
+        publish fields: [:name, :profile_name, :profile_id]
       end
     end
 
@@ -19,6 +34,7 @@ describe "publishing at least once" do
       clear_db
 
       Object.send(:remove_const, :MMTestUser)
+      Object.send(:remove_const, :MMTestProfile)
     end
 
     let(:name) { SecureRandom.uuid }
@@ -27,7 +43,11 @@ describe "publishing at least once" do
         "type"      => "MMTestUser",
         "operation" => "create",
         "id"        => { "id" => 1 },
-        "data"      => { "name" => name }
+        "data"      => {
+          "name"         => name,
+          "profile_name" => nil,
+          "profile_id"   => nil
+         }
       }
     }
 
@@ -72,6 +92,20 @@ describe "publishing at least once" do
 
       operations = payloads.map { |pl| pl['operation'] }
       expect(operations).to eq(["create", "update", "destroy"])
+    end
+
+    it 'publishes assiciated records in payload' do
+      profile_name         = 'profile name!'
+      user                 = MMTestUser.new(name: name)
+      profile              = MMTestProfile.new(name: profile_name)
+      user.mm_test_profile = profile
+      user.save!
+
+      payload = JSON.parse(MultipleMan::Outbox::Message::Rails.last.payload)
+      expect(payload['data']['profile_name']).to eq(profile_name)
+
+      expect(payload['data']['profile_id']).to eq(profile.id)
+      expect(profile.id).to be >= 1
     end
 
     it 'guarantees publishing within a transaction' do

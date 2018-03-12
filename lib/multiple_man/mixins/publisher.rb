@@ -39,20 +39,20 @@ module MultipleMan
     private
 
     def self.add_in_commit_hooks(base)
-      if base.respond_to?(:after_update)
-        base.after_update do |r|
-          if r.respond_to?(:changed?) && r.changed?
+      if base.respond_to?(:after_save)
+        base.after_save { |r|
+          return true unless r.respond_to?(:created_at) && r.respond_to?(:updated_at)
+
+          if r.created_at == r.updated_at
+            r.multiple_man_publish_outbox_true(:create)
+          else
             r.multiple_man_publish_outbox_true(:update)
           end
-        end
+        }
       end
 
       if base.respond_to?(:before_destroy)
         base.before_destroy { |r| r.multiple_man_publish_outbox_true(:destroy) }
-      end
-
-      if base.respond_to?(:after_create)
-        base.after_create { |r| r.multiple_man_publish_outbox_true(:create) }
       end
 
       if base.respond_to?(:after_touch)
