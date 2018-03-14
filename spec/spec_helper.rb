@@ -20,10 +20,12 @@ def setup_db
   require 'multiple_man/outbox/db'
 
   db.run_migrations
+  db.connection.execute('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
   db.connection.execute <<~SQL
     CREATE TABLE mm_test_users (
       id         BIGSERIAL PRIMARY KEY,
       name       varchar(255),
+      uuid       uuid      default uuid_generate_v1(),
       created_at TIMESTAMP default NOW(),
       updated_at TIMESTAMP default NOW()
     )
@@ -34,6 +36,7 @@ def setup_db
       id              BIGSERIAL PRIMARY KEY,
       mm_test_user_id BIGSERIAL,
       name            varchar(255),
+      uuid            uuid      default uuid_generate_v1(),
       created_at      TIMESTAMP default NOW(),
       updated_at      TIMESTAMP default NOW()
     )
