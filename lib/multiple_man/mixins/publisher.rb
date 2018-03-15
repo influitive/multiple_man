@@ -75,7 +75,14 @@ module MultipleMan
     module ClassMethods
 
       def multiple_man_publish(operation=:create)
-        multiple_man_publisher.publish(self, operation)
+        if MultipleMan.configuration.outbox_alpha?
+          multiple_man_publisher.publish(self, operation)
+          multiple_man_publisher.publish(self, operation, outbox: true)
+        elsif MultipleMan.configuration.at_least_once?
+          multiple_man_publisher.publish(self, operation, outbox: true)
+        else
+          multiple_man_publisher.publish(self, operation)
+        end
       end
 
       def publish(options = {})

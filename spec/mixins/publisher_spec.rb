@@ -39,10 +39,18 @@ describe MultipleMan::Publisher do
                                  .with(my_mock, :create, { outbox: false })
       my_mock.save
     end
+
+    it '#multiple_man_publish on class' do
+      expect(MockClass.multiple_man_publisher).to receive(:publish)
+        .with(MockClass, :create)
+
+      MockClass.multiple_man_publish
+    end
   end
 
   describe "publish at least once" do
     before {
+      setup_rails
       MultipleMan.configuration.messaging_mode = :at_least_once
       MockClass.publish
     }
@@ -55,10 +63,18 @@ describe MultipleMan::Publisher do
                                  .with(my_mock, :create, { outbox: true })
       my_mock.save
     end
+
+    it '#multiple_man_publish on class' do
+      expect(MockClass.multiple_man_publisher).to receive(:publish)
+        .with(MockClass, :create, { outbox: true })
+
+      MockClass.multiple_man_publish
+    end
   end
 
   describe "publish twice" do
     before {
+      setup_rails
       MultipleMan.configuration.messaging_mode = :outbox_alpha
       MockClass.publish
     }
@@ -74,6 +90,15 @@ describe MultipleMan::Publisher do
                                  .should_receive(:publish)
                                  .with(my_mock, :create, { outbox: true })
       my_mock.save
+    end
+
+    it '#multiple_man_publish on class' do
+      expect(MockClass.multiple_man_publisher).to receive(:publish)
+        .with(MockClass, :create)
+      expect(MockClass.multiple_man_publisher).to receive(:publish)
+        .with(MockClass, :create, { outbox: true })
+
+      MockClass.multiple_man_publish
     end
   end
 end
