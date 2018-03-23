@@ -17,12 +17,27 @@ describe MultipleMan::Producers::General do
     after(:each) { clear_db }
 
     it '#run_producer runs producer' do
+      old_time = Time.now - 100_000
+      message  = {
+        routing_key: 'Foo.bar',
+        payload:     'foo',
+        created_at:  old_time,
+        updated_at:  old_time
+      }
+
       MultipleMan.configuration.messaging_mode = :at_least_once
       MultipleMan::Connection.connect do |connection|
-        expect(connection.topic).to receive(:publish)
+        expect(connection.topic).to receive(:publish).with(
+          'foo',
+          {
+            routing_key: message[:routing_key],
+            persistent: true,
+            headers: { published_at: old_time.to_i }
+          }
+        )
       end
       expect(subject).to receive(:loop).and_yield
-      create_messages(1)
+      insert_message(message)
 
       subject.run_producer
 

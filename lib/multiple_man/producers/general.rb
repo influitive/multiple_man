@@ -80,7 +80,7 @@ module MultipleMan
           message.values[:payload],
           routing_key: message.values[:routing_key],
           persistent:  true,
-          headers:     { published_at: Time.now.to_i }
+          headers:     { published_at: message.created_at.to_i }
         )
       end
 
