@@ -48,6 +48,11 @@ def setup_rails
   ActiveRecord::Base.establish_connection(conn)
 end
 
+def insert_message(msg)
+  require_relative '../lib/multiple_man/outbox/message/sequel'
+  MultipleMan::Outbox::Message::Sequel.insert(msg)
+end
+
 def create_messages(count)
   require_relative '../lib/multiple_man/outbox/message/sequel'
 
