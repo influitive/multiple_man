@@ -127,6 +127,16 @@ describe "publishing at least once" do
       expect(MMTestUser.count).to eq(0)
       expect(MultipleMan::Outbox.count).to eq(0)
     end
+
+    it 'does not publish unchanged records' do
+      user = MMTestUser.create!(name: name)
+      user.save!
+
+      user = MMTestUser.find_by(name: name)
+      user.save!
+
+      expect(MultipleMan::Outbox.count).to eq(1)
+    end
   end
 
   context 'at most once' do
