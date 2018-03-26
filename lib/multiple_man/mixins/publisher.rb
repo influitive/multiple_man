@@ -41,9 +41,10 @@ module MultipleMan
     def self.add_in_commit_hooks(base)
       if base.respond_to?(:after_save)
         base.after_save { |r|
-          return true unless r.respond_to?(:created_at) && r.respond_to?(:updated_at)
-
-          if r.created_at == r.updated_at
+          if (r.respond_to?(:changed?) && !r.changed?) ||
+             (!r.respond_to?(:created_at) || !r.respond_to?(:updated_at))
+            # do nothing
+          elsif r.created_at == r.updated_at
             r.multiple_man_publish_outbox_true(:create)
           else
             r.multiple_man_publish_outbox_true(:update)
