@@ -10,7 +10,8 @@ module MultipleMan
 
           new(
             payload:     data.payload,
-            routing_key: routing_key
+            routing_key: routing_key,
+            set_name:    MultipleMan::RoutingKey.model_name(routing_key)
           ).save!
         end
       end

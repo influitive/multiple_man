@@ -21,14 +21,14 @@ describe 'Outbox::Message::Sequel' do
     expect(subject.all.count).to eq(0)
   end
 
-  it '#in_batches yields messages' do
-    create_messages(4)
+  it '#in_groups yields messages ordered by set name' do
+    create_messages(40)
 
-    expected_ids = subject.all.map(&:id)
+    expected_ids = subject.order_by(:set_name, :id).all.map(&:id)
     result = []
 
-    subject.in_batches_and_delete(2) do |messages|
-      messages.each { |m| result << m.id }
+    subject.in_groups_and_delete do |messages|
+      messages.each { |m| result << m[:id] }
     end
 
     expect(subject.all.count).to eq(0)
