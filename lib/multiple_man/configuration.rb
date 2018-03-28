@@ -36,7 +36,7 @@ module MultipleMan
       self.messaging_mode = :at_most_once
       self.db_url = nil
       self.producer_sleep_timeout = 2
-      self.producer_batch_size = 1000
+      self.producer_batch_size = 100
       self.channel_reset_time = nil
 
       @subscriber_registry = Subscribers::Registry.new

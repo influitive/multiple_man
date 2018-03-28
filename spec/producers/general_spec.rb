@@ -22,7 +22,8 @@ describe MultipleMan::Producers::General do
         routing_key: 'Foo.bar',
         payload:     'foo',
         created_at:  old_time,
-        updated_at:  old_time
+        updated_at:  old_time,
+        set_name:    'Foo'
       }
 
       MultipleMan.configuration.messaging_mode = :at_least_once

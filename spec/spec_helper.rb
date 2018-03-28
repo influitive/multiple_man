@@ -63,7 +63,7 @@ def create_messages(count)
 end
 
 def listener_klasses
-  @routing_key ||= 3.times.map { |i| "User#{i}" }
+  @routing_key ||= 20.times.map { |i| "User#{i}" }
 end
 
 def routing_keys
@@ -73,11 +73,13 @@ def routing_keys
 end
 
 def sample_message(i)
+  routing_key = routing_keys.sample
   message = {
-    routing_key: routing_keys.sample,
+    routing_key: routing_key,
     payload:     { counter: i }.to_json,
     created_at:  Time.now,
-    updated_at:  Time.now
+    updated_at:  Time.now,
+    set_name:    MultipleMan::RoutingKey.model_name(routing_key)
   }
 end
 

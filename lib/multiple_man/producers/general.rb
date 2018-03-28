@@ -40,10 +40,10 @@ module MultipleMan
       # messages / model. This is better than processing messages serially which
       # requires 1 confirm per message.
       def produce_all(connection)
-        Outbox::Message::Sequel.in_batches_and_delete(batch_size) do |messages|
+        Outbox::Message::Sequel.in_groups_and_delete(batch_size) do |messages|
           break if @should_reset
 
-          grouped_messages = group_by_model(messages)
+          grouped_messages = group_by_set(messages)
 
           while grouped_messages.any?
             sent_messages = send_messages!(grouped_messages, connection)
@@ -86,21 +86,21 @@ module MultipleMan
         MultipleMan.logger.debug("published #{messages.size} messages")
       end
 
-      def group_by_model(messages)
+      def group_by_set(messages)
         grouped_messages = Hash.new { |h, k| h[k] = [] }
         messages.each do |message|
-          model_name = RoutingKey.model_name(message.routing_key)
-          grouped_messages[model_name] << message
+          set_name = message[:set_name]
+          grouped_messages[set_name] << message
         end
         grouped_messages.values
       end
 
       def publish(connection, message)
         connection.topic.publish(
-          message.values[:payload],
-          routing_key: message.values[:routing_key],
+          message[:payload],
+          routing_key: message[:routing_key],
           persistent:  true,
-          headers:     { published_at: message.created_at.to_i }
+          headers:     { published_at: message[:created_at].to_i }
         )
       end
 
