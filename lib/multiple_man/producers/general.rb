@@ -1,6 +1,11 @@
 module MultipleMan
   module Producers
     class General
+      def initialize
+        @last_reset   = Time.now
+        @should_reset = false
+      end
+
       def run_producer
         MultipleMan.logger.info "Starting producer"
 
@@ -11,6 +16,7 @@ module MultipleMan
         loop do
           timeout(last_run)
           Connection.connect { |connection| produce_all(connection) }
+          reset! if @should_reset
           last_run = Time.now
         end
       end
@@ -35,6 +41,8 @@ module MultipleMan
       # requires 1 confirm per message.
       def produce_all(connection)
         Outbox::Message::Sequel.in_batches_and_delete(batch_size) do |messages|
+          break if @should_reset
+
           grouped_messages = group_by_model(messages)
 
           while grouped_messages.any?
@@ -42,7 +50,19 @@ module MultipleMan
             confirm_published!(sent_messages, connection) if sent_messages
             remove_empty_lists!(grouped_messages)
           end
+
+          should_reset?
         end
+      end
+
+      def should_reset?
+        reset_time = MultipleMan.configuration.channel_reset_time
+        @should_reset = reset_time && (Time.now - @last_reset) > reset_time
+      end
+
+      def reset!
+        Connection.reset_channel!
+        @last_reset = Time.now
       end
 
       def remove_empty_lists!(grouped_messages)

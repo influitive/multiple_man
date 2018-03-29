@@ -77,6 +77,13 @@ module MultipleMan
       end
     end
 
+    def self.reset_channel!
+      @mutex.synchronize do
+        channel.close
+        Thread.current.thread_variable_set(:multiple_man_current_channel, nil)
+      end
+    end
+
     attr_reader :topic
     attr_accessor :channel
     delegate :queue, to: :channel
