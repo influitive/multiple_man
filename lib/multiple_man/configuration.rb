@@ -13,7 +13,8 @@ module MultipleMan
                   :worker_concurrency, :reraise_errors, :connection_recovery,
                   :queue_name, :prefetch_size, :bunny_opts, :exchange_opts,
                   :publisher_confirms, :messaging_mode, :db_url,
-                  :producer_sleep_timeout, :producer_batch_size
+                  :producer_sleep_timeout, :producer_batch_size,
+                  :channel_reset_time
 
     attr_writer :logger, :tracer
 
@@ -36,6 +37,7 @@ module MultipleMan
       self.db_url = nil
       self.producer_sleep_timeout = 2
       self.producer_batch_size = 1000
+      self.channel_reset_time = nil
 
       @subscriber_registry = Subscribers::Registry.new
     end

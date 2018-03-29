@@ -67,5 +67,26 @@ describe MultipleMan::Producers::General do
       et = Time.now
       (et - st).should be >= MultipleMan.configuration.producer_sleep_timeout
     end
+
+    context 'channel_reset' do
+      after(:each) { MultipleMan.configuration.channel_reset_time = nil }
+
+      it 'does not reset channel' do
+        expect(subject).to receive(:loop).and_yield
+
+        create_messages(1)
+        expect(MultipleMan::Connection).to_not receive(:reset_channel!)
+        subject.run_producer
+      end
+
+      it 'resets channel' do
+        MultipleMan.configuration.channel_reset_time = 0
+        expect(subject).to receive(:loop).and_yield
+
+        create_messages(1)
+        expect(MultipleMan::Connection).to receive(:reset_channel!)
+        subject.run_producer
+      end
+    end
   end
 end

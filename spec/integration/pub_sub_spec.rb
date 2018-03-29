@@ -42,21 +42,49 @@ describe 'pub_sub' do
     it '#pub_sub' do
       allow(consumer).to receive(:preload_framework!).and_return(true)
       MultipleMan.configuration.messaging_mode = :at_least_once
-      expect(producer).to receive(:loop).and_yield
       create_messages(messages)
 
-      producer.run_producer
+      producer_thread = Thread.new {
+        producer.run_producer
+      }
 
-      tr = Thread.new {
+      consumer_thread = Thread.new {
         require 'multiple_man'
         configure_multiple_man
         consumer.run
       }
       wait_for { MultipleMan::Outbox.count == 0 && Inbox.all.count == messages }
-      tr.kill
+      producer_thread.kill && consumer_thread.kill
 
       expect(Inbox.all.count).to eq(messages)
       expect(Inbox.all.uniq.count).to eq(messages)
+    end
+
+    context 'with channel reset' do
+      before(:each) { MultipleMan.configuration.channel_reset_time = 0 }
+      after(:each) { MultipleMan.configuration.channel_reset_time = nil }
+
+      it '#pub_sub' do
+        allow(consumer).to receive(:preload_framework!).and_return(true)
+        MultipleMan.configuration.messaging_mode = :at_least_once
+        create_messages(messages)
+
+        producer_thread = Thread.new {
+          producer.run_producer
+        }
+
+        consumer_thread = Thread.new {
+          require 'multiple_man'
+          configure_multiple_man
+          consumer.run
+        }
+
+        wait_for { MultipleMan::Outbox.count == 0 && Inbox.all.count == messages }
+        producer_thread.kill && consumer_thread.kill
+
+        expect(Inbox.all.count).to eq(messages)
+        expect(Inbox.all.uniq.count).to eq(messages)
+      end
     end
   end
 end
