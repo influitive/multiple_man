@@ -40,18 +40,20 @@ module MultipleMan
       # messages / model. This is better than processing messages serially which
       # requires 1 confirm per message.
       def produce_all(connection)
-        Outbox::Message::Sequel.in_groups_and_delete(batch_size) do |messages|
-          break if @should_reset
+        ActiveSupport::Notifications.instrument('multiple_man.producer.produce_all') do 
+          Outbox::Message::Sequel.in_groups_and_delete(batch_size) do |messages|
+            break if @should_reset
 
-          grouped_messages = group_by_set(messages)
+            grouped_messages = group_by_set(messages)
 
-          while grouped_messages.any?
-            sent_messages = send_messages!(grouped_messages, connection)
-            confirm_published!(sent_messages, connection) if sent_messages
-            remove_empty_lists!(grouped_messages)
+            while grouped_messages.any?
+              sent_messages = send_messages!(grouped_messages, connection)
+              confirm_published!(sent_messages, connection) if sent_messages
+              remove_empty_lists!(grouped_messages)
+            end
+
+            should_reset?
           end
-
-          should_reset?
         end
       end
 
@@ -70,20 +72,24 @@ module MultipleMan
       end
 
       def send_messages!(grouped_messages, connection)
-        grouped_messages.each_with_object([]) do |messages, sent_messages|
-          next if messages.empty?
+        ActiveSupport::Notifications.instrument('multiple_man.producer.send_messages') do
+          grouped_messages.each_with_object([]) do |messages, sent_messages|
+            next if messages.empty?
 
-          message = messages.delete_at(0)
-          publish(connection, message)
-          sent_messages << message
+            message = messages.delete_at(0)
+            publish(connection, message)
+            sent_messages << message
+          end
         end
       end
 
       def confirm_published!(messages, connection)
-        channel = connection.channel
-        raise ProducerError.new(channel.nacked_set.to_a) unless channel.wait_for_confirms
+        ActiveSupport::Notifications.instrument('multiple_man.producer.confirm_published') do
+          channel = connection.channel
+          raise ProducerError.new(channel.nacked_set.to_a) unless channel.wait_for_confirms
 
-        MultipleMan.logger.debug("published #{messages.size} messages")
+          MultipleMan.logger.debug("published #{messages.size} messages")
+        end
       end
 
       def group_by_set(messages)
