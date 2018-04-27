@@ -18,7 +18,10 @@ module MultipleMan
 
         def self.fetch_messages_from_database(size)
           # This is just here for instrumentation, but hopefully the table stays small enough it will not impact performance much
-          table_count = Outbox::DB.connection.execute("SELECT COUNT(*) FROM multiple_man_messages;")
+          # table_count = Outbox::DB.connection.execute("SELECT COUNT(*) FROM multiple_man_messages;")
+          # For the moment, we're just hardcoding this to always zero. Once an efficient solution to count entries in the table is found,
+          #   we can put that query here, instead.
+          table_count = 0
 
           ActiveSupport::Notifications.instrument('multiple_man.producer.outbox_db_fetch', table_count: table_count) do |payload|
             messages = Outbox::DB.connection.fetch(grouped_by_limit_sql(size)).all
