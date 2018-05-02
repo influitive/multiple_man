@@ -14,6 +14,14 @@ module MultipleMan
           end
         end
 
+        def self.run_listener(producer_thread)
+          # This will run infinitely in the main thread
+          Outbox::DB.connection.listen('outbox_channel', { loop: true }) do |_channel, _notifier_pid, _payload|
+            # Wake the producer thread up if it's sleeping and a new message comes in
+            producer_thread.run if producer_thread.status == 'sleep'
+          end
+        end
+
         private
 
         def self.fetch_messages_from_database(size)

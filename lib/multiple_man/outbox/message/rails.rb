@@ -14,6 +14,11 @@ module MultipleMan
             set_name:    MultipleMan::RoutingKey.model_name(routing_key)
           ).save!
         end
+
+        after_save do
+          # Notify the producer that there is a new message
+          self.class.connection.execute("NOTIFY outbox_channel")
+        end
       end
     end
   end

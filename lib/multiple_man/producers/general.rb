@@ -11,6 +11,12 @@ module MultipleMan
         require_relative '../outbox/db'
         require_relative '../outbox/message/sequel'
 
+        @producer_thread = Thread.new { producer_loop }
+
+        Outbox::Message::Sequel.run_listener(@producer_thread)
+      end
+
+      def producer_loop
         last_run = Time.now
         loop do
           timeout(last_run) unless @did_work
