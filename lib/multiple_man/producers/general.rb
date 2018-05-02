@@ -13,7 +13,7 @@ module MultipleMan
 
         last_run = Time.now
         loop do
-          timeout(last_run)
+          timeout(last_run) unless @did_work
           Connection.connect { |connection| produce_all(connection) }
           reset! if should_reset?
           last_run = Time.now
@@ -40,12 +40,14 @@ module MultipleMan
       # requires 1 confirm per message.
       def produce_all(connection)
         ActiveSupport::Notifications.instrument('multiple_man.producer.produce_all') do 
+          @did_work = false
           Outbox::Message::Sequel.in_groups_and_delete(batch_size) do |messages|
             break if should_reset?
 
             grouped_messages = group_by_set(messages)
 
             while grouped_messages.any?
+              @did_work = true
               sent_messages = send_messages!(grouped_messages, connection)
               confirm_published!(sent_messages, connection) if sent_messages
               remove_empty_lists!(grouped_messages)
