@@ -35,7 +35,7 @@ module MultipleMan
       self.publisher_confirms = false
       self.messaging_mode = :at_most_once
       self.db_url = nil
-      self.producer_sleep_timeout = 2
+      self.producer_sleep_timeout = 0.1
       self.producer_batch_size = 100
       self.channel_reset_time = nil
 
