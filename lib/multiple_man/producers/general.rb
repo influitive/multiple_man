@@ -75,8 +75,12 @@ module MultipleMan
           grouped_messages.each_with_object([]) do |messages, sent_messages|
             next if messages.empty?
 
+            # Temporarily we are going to get the current time from the db and attach it to the published message
+            # This is strictly for diagnostics, and should probably be removed in production for performance reasons
+            current_time = MultipleMan::Outbox::DB.connection.fetch('select current_timestamp;').first[:now]
+
             message = messages.delete_at(0)
-            publish(connection, message)
+            publish(connection, message, current_time)
             sent_messages << message
           end
         end
@@ -100,12 +104,16 @@ module MultipleMan
         grouped_messages.values
       end
 
-      def publish(connection, message)
+      def publish(connection, message, publish_time)
         connection.topic.publish(
           message[:payload],
           routing_key: message[:routing_key],
           persistent:  true,
-          headers:     { published_at: message[:created_at].to_i }
+          headers:     { 
+            db_created_at: message[:created_at].to_f,
+            # Just for now... include the time we publish the message for diagnostic purposes
+            published_at: publish_time.to_f
+          }
         )
       end
 
