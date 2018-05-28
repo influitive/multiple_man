@@ -6,11 +6,16 @@ module MultipleMan
       self.options = options
     end
 
+    def self.metadata=(metadata)
+      @@metadata = metadata
+    end
+
     def payload
       {
         type: type,
         operation: operation,
         id: id,
+        metadata: @@metadata,
         data: data
       }.to_json
     end
