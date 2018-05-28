@@ -5,6 +5,7 @@ module MultipleMan
 
   def self.configure
     yield(configuration) if block_given?
+    PayloadGenerator.metadata= @configuration.metadata
   end
 
   class Configuration
@@ -14,7 +15,7 @@ module MultipleMan
                   :queue_name, :prefetch_size, :bunny_opts, :exchange_opts,
                   :publisher_confirms, :messaging_mode, :db_url,
                   :producer_sleep_timeout, :producer_batch_size,
-                  :channel_reset_time
+                  :channel_reset_time, :metadata
 
     attr_writer :logger, :tracer
 
@@ -38,6 +39,7 @@ module MultipleMan
       self.producer_sleep_timeout = 0.1
       self.producer_batch_size = 100
       self.channel_reset_time = nil
+      self.metadata = nil
 
       @subscriber_registry = Subscribers::Registry.new
     end
