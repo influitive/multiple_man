@@ -89,9 +89,20 @@ module MultipleMan
       def confirm_published!(messages, connection)
         ActiveSupport::Notifications.instrument('multiple_man.producer.confirm_published') do
           channel = connection.channel
-          raise ProducerError.new(channel.nacked_set.to_a) unless channel.wait_for_confirms
-
-          MultipleMan.logger.debug("published #{messages.size} messages")
+          begin
+            retries ||= 3
+            raise ProducerError.new(channel.nacked_set.to_a) unless channel.wait_for_confirms
+          rescue ProducerError
+            if (retries -= 1).zero?
+              MultipleMan.logger.debug("Tried to publish #{messages.size}, but failed to publish #{channel.nacked_set.size} messages!")
+              break
+            end
+            grouped_messages = group_by_set(messages)
+            send_messages!(grouped_messages, connection)
+            retry
+          else
+            MultipleMan.logger.debug("published #{messages.size} messages")
+          end
         end
       end
 
