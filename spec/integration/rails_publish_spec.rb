@@ -13,20 +13,28 @@ describe "publishing at least once" do
 
         alias_attribute :profile_name, :name
         alias_attribute :profile_id, :id
+        alias_attribute :profile_uuid, :uuid
       end
 
       class MMTestUser < ::ActiveRecord::Base
+        # NOTE: if payload includes associated records, they must be reloaded
+        # after_save & before including MultipleMan::Publisher, otherwise rails
+        # may use stale assocation values
+        after_save do |_record|
+          mm_test_profile.reload if mm_test_profile && created_at == updated_at
+        end
+
         include MultipleMan::Publisher
 
         has_one :mm_test_profile,
           class_name: MMTestProfile.name,
           autosave: true
 
-        delegate :profile_name, :profile_id,
+        delegate :profile_name, :profile_id, :profile_uuid,
           to: :mm_test_profile,
           :allow_nil => true
 
-        publish fields: [:name, :profile_name, :profile_id]
+        publish fields: [:name, :profile_name, :profile_id, :profile_uuid]
       end
     end
 
@@ -46,7 +54,8 @@ describe "publishing at least once" do
         "data"      => {
           "name"         => name,
           "profile_name" => nil,
-          "profile_id"   => nil
+          "profile_id"   => nil,
+          "profile_uuid" => nil
          }
       }
     }
@@ -109,11 +118,13 @@ describe "publishing at least once" do
       user.mm_test_profile = profile
       user.save!
 
+      # avoid reloading existing profile object for expectation
+      expected_profile = MMTestProfile.find(profile.id)
+
       payload = JSON.parse(MultipleMan::Outbox::Message::Rails.last.payload)
       expect(payload['data']['profile_name']).to eq(profile_name)
-
-      expect(payload['data']['profile_id']).to eq(profile.id)
-      expect(profile.id).to be >= 1
+      expect(payload['data']['profile_id']).to eq(expected_profile.id)
+      expect(payload['data']['profile_uuid']).to eq(expected_profile.uuid)
     end
 
     it 'guarantees publishing within a transaction' do
