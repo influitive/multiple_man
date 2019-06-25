@@ -19,8 +19,8 @@ module MultipleMan
 
     def multiple_man_publish(operation=:create)
       if MultipleMan.configuration.outbox_alpha?
-        multiple_man_publish_outbox_false(operation)
         multiple_man_publish_outbox_true(operation)
+        multiple_man_publish_outbox_false(operation)
       elsif MultipleMan.configuration.at_least_once?
         multiple_man_publish_outbox_true(operation)
       else
@@ -77,8 +77,8 @@ module MultipleMan
 
       def multiple_man_publish(operation=:create)
         if MultipleMan.configuration.outbox_alpha?
-          multiple_man_publisher.publish(self, operation)
           multiple_man_publisher.publish(self, operation, outbox: true)
+          multiple_man_publisher.publish(self, operation)
         elsif MultipleMan.configuration.at_least_once?
           multiple_man_publisher.publish(self, operation, outbox: true)
         else
