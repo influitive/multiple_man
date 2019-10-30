@@ -37,7 +37,7 @@ module MultipleMan
 
         queue << AddCommand.new(thread_id, channel)
 
-        puts "Opened channel #{channel.number}"
+        puts "Opened channel #{channel.try(:number)}"
         self
       end
 
