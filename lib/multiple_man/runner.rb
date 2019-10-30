@@ -5,6 +5,7 @@ module MultipleMan
     class ShutDown < Error; end
     extend Forwardable
 
+    attr_reader :listener, :queue
     MODES = [:general, :seed].freeze
 
     def initialize(options = {})
@@ -20,6 +21,22 @@ module MultipleMan
       build_listener.listen
     rescue ShutDown
       connection.close
+    end
+
+    # publish a test message using current connection
+    def publish_test_message(model_name, data, operation: :create, id: :id)
+      message = {
+        type: model_name,
+        data: data.merge(operation: operation)
+      }
+      message[:id] = { id => data[:id] }
+      routing_key = MultipleMan::RoutingKey.new(model_name, operation).to_s
+      queue.publish(message.to_json, routing_key: routing_key)
+    end
+
+    # find a subscriber listener for a specific class name
+    def listener_for(klass_name)
+      listener.send(:subscribers).values.find { |a| a.klass == klass_name }
     end
 
     private
@@ -51,8 +68,10 @@ module MultipleMan
     end
 
     def build_listener
-      listener_class.new(
-        queue: channel.queue(*queue_params),
+      @queue = channel.queue(*queue_params)
+      @queue.channel.exchange(topic_name)
+      @listener = listener_class.new(
+        queue: queue,
         subscribers: listeners,
         topic: topic_name
       )
