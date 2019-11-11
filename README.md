@@ -1,8 +1,7 @@
 # MultipleMan
 
-# WARNING: THIS PROJECT IS NO LONGER MAINTAINED. There will be no future updates unless another maintainer wishes to own it.
-
-[![CircleCI](https://circleci.com/gh/influitive/multiple_man.png)](https://circleci.com/gh/influitive/multiple_man)
+NOTE: This is a fork from https://github.com/influitive/multiple_man with some
+fixes applied because the original one is not maintained anymore.
 
 MultipleMan synchronizes your ActiveRecord models between Rails
 apps, using RabbitMQ to send messages between your applications.
@@ -20,7 +19,7 @@ It's heavily inspired by Promiscuous, but differs in a few ways:
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'multiple_man'
+gem 'multiple_man', github: 'owen2345/multiple_man'
 ```
 
 And then execute:
@@ -204,6 +203,27 @@ MyModel.multiple_man_publish(:seed)
 ```
 
 3. Stop the seeder rake task when all of your messages have been processed. You can check your RabbitMQ server
+
+## Fixes and improvements
+- Rails 6 deprecation warnings
+- Easy rspec integration (Added: ```publish_test_message```, ```listener_for``` methods)
+    ```
+    describe 'Sample subscribe sync' do
+      let(:service) { MultipleMan::Runner.new(mode: :general) }
+      let(:model) { build(:my_model) }
+      let(:model_name) { model.class.name }
+      let(:subscribed_fields) { service.listener_for(model_name).options[:fields] }
+      before { service.run }
+    
+      it "Create a new Item when listen a new Item event" do
+        expect do
+          service.publish_test_message(model_name, {name: 'sample name'}, operation: :create)
+        end.to change { model.class.count }.by(1)
+      end
+    end
+    ```
+- Fixed exchange not found error
+- Fixed missing attribute ```number``` when using bunny-mock gem
 
 ## Contributing
 

@@ -18,7 +18,7 @@ module MultipleMan
 
     def initialize
       self.topic_name = "multiple_man"
-      self.app_name = Rails.application.class.parent.to_s if defined?(Rails)
+      self.app_name = Rails.application.class.module_parent.to_s if defined?(Rails)
       self.enabled = true
       self.worker_concurrency = 1
       self.reraise_errors = true
